@@ -1,0 +1,51 @@
+spring:
+  profiles:
+    active: default
+  jpa:
+    open-in-view: false
+
+---
+
+spring:
+  profiles: test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+
+---
+
+spring:
+  profiles: default
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+logging:
+  level:
+    root: debug
+---
+
+spring:
+  profiles: sandbox
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+
+---
+
+spring:
+  profiles: production
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
