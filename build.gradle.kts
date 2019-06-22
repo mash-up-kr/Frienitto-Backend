@@ -27,6 +27,8 @@ subprojects {
     java.sourceCompatibility = JavaVersion.VERSION_1_8
     java.targetCompatibility = JavaVersion.VERSION_1_8
 
+    configurations.forEach { it.exclude("org.springframework.boot", "spring-boot-starter-tomcat")}
+
     dependencies {
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib-jdk8"))
@@ -59,6 +61,7 @@ project(":manitto") {
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
         implementation("org.springframework.boot:spring-boot-starter-jdbc")
         implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-undertow")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
         runtimeOnly("com.h2database:h2")
@@ -70,6 +73,7 @@ project(":apigw") {
     group = "org.frienitto.apigw"
 
     dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-undertow")
         implementation("org.springframework.cloud:spring-cloud-starter-netflix-zuul")
         implementation("org.springframework.cloud:spring-cloud-starter-netflix-ribbon")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
