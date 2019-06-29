@@ -63,6 +63,7 @@ class DatabaseConfig {
         dataSource.jdbcUrl = dbProperties.url
         dataSource.username = dbProperties.username
         dataSource.password = dbProperties.password
+        dataSource.driverClassName = dbProperties.driverClassName
         dataSource.maximumPoolSize = dbProperties.maxIdleConnection.toInt()
         dataSource.minimumIdle = dbProperties.minIdleConnection.toInt()
 
