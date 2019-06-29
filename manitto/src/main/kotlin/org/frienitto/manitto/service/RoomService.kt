@@ -13,12 +13,11 @@ import org.springframework.stereotype.Service
 class RoomService(private val roomRepository: RoomRepository, private val userRoomMapService: UserRoomMapService) {
 
     fun createRoom(owner: User, request: RoomRequest): Response<RoomResponse> {
-        val room = Room.newRoom(owner, request.name, request.code, request.expiresDate)
-        roomRepository.save(room)
+        val room = roomRepository.save(Room.newRoom(owner, request.name, request.code, request.expiresDate))
         val participant = Participant(owner.id, owner.username, owner.imageCode)
         val participantList: List<Participant> = listOf(participant)
         return Response(201, "방 생성 완료", RoomResponse(
-                null, room.title, room.expiresDate, "", participantList))
+                room.id, room.title, room.expiresDate, "", participantList))
     }
 
     fun getAllRoom(): Response<List<Room>> {
