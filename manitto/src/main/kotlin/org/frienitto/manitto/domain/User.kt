@@ -1,5 +1,6 @@
 package org.frienitto.manitto.domain
 
+import org.frienitto.manitto.dto.AccessToken
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -46,14 +47,8 @@ class User private constructor(
             field = value
         }
     private lateinit var salt: String
-    var token: String? = null
-        private set(value) {
-            field = value
-        }
-    var tokenExpiresDate: LocalDate? = null
-        private set(value) {
-            field = value
-        }
+    lateinit var token: String
+    lateinit var tokenExpiresDate: LocalDate
     lateinit var createdAt: LocalDateTime
     var createdBy: String? = null
         private set(value) {
@@ -69,6 +64,9 @@ class User private constructor(
     @PrePersist
     fun onPersist() {
         val now = LocalDateTime.now()
+        val accessToken = AccessToken.newToken(this.email)
+        this.token = accessToken.token
+        this.tokenExpiresDate = accessToken.tokenExpiresDate
         this.salt = System.currentTimeMillis().toString()
         this.createdAt = now
         this.createdBy = this.createdBy ?: "system"
@@ -77,7 +75,7 @@ class User private constructor(
     }
 
     companion object {
-        fun newUser(username: String, nickname: String, description: String, imageCode: Int, email: String, password: String): User {
+        fun newUser(username: String, nickname: String = "", description: String, imageCode: Int, email: String, password: String): User {
             return User(username, nickname, description, imageCode, email, password).apply {
                 this.createdBy = nickname
                 this.updatedBy = nickname
