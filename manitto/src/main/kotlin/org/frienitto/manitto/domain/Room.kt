@@ -68,6 +68,7 @@ class Room private constructor(
             return Room(owner, title, code, expiresDate).apply {
                 this.createdBy = owner.nickname
                 this.updatedBy = owner.nickname
+                this.expiresDate = expiresDate
             }
         }
     }

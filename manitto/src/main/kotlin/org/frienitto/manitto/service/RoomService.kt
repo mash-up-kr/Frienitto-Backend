@@ -32,7 +32,4 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
         return Response(200, "조회 성공", RoomResponse(
                room.id, room.title, room.expiresDate, room.url, participants))
     }
-
-
-
 }

@@ -44,8 +44,8 @@ class UserRoomMapService(private val usersRoomMapRepository: UserRoomMapReposito
 
     fun matchingStart(matchRequest: MatchRequest): Response<MatchResponse> {
         val participants = matchRequest.participants
-        val a = participants.drop(1)
-        val b = participants.take(participants.size - 1)
+        var a = participants.drop(1) + participants[0]
+        var b = participants.take(participants.size - 1) + participants[participants.size - 1]
         val missions = mutableListOf<Mission>()
         for (x in 0 until participants.size) {
             missions.add(Mission.newMission(a[x], b[x], matchRequest.roomId, MissionType.USER, MissionStatus.DELIVERY, "Test"))

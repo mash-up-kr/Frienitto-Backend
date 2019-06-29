@@ -1,6 +1,81 @@
-# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
-#
-# Following HTTP Request Live Templates are available:
-# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
-# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
-# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+### 인증 코드 발행
+POST http://localhost:8080/api/v1/issue/code
+Content-Type: application/json
+
+{
+  "receiver_info": "gksxodnd007@naver.com",
+  "type": "EMAIL"
+}
+
+### 인증 코드 검사
+POST http://localhost:8080/api/v1/verify/code
+Content-Type: application/json
+
+{
+  "receiver_info": "gksxodnd007@naver.com",
+  "type": "EMAIL",
+  "code": "5AA0B415"
+}
+
+### 회원 가입
+POST http://localhost:8080/api/v1/sign-up
+Content-Type: application/json
+X-Register-Token: TESTTOKEN
+
+{
+  "username": "망나니휴~~~",
+  "description": "망나니",
+  "image_code": 1,
+  "email": "gksxodnd00@naver.com",
+  "password": "1234"
+}
+
+### 로그인
+POST http://localhost:8080/api/v1/sign-in
+Content-Type: application/json
+
+{
+  "email": "gksxodnd007@naver.com",
+  "password": "1234"
+}
+
+### 룸 생성
+POST http://localhost:8080/api/v1/register/room
+Content-Type: application/json
+X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
+
+{
+  "token":"FEAA9DC8F3A7F5DFE6DEBCD3114947D6",
+  "name": "망나니들 모임",
+  "code": "dkaf931",
+  "expires_date": "2020-01-01"
+}
+
+### 룸 조인
+GET http://localhost:8080/api/v1/join/room/2
+Content-Type: application/json
+X-Authorization: 4329A8A72B9AE1E4AB5C161A90CD5252
+
+### 룸 가져오기
+GET http://localhost:8080/api/v1/room/list
+Content-Type: application/json
+X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
+
+###
+GET http://localhost:8080/api/v1/room/2
+Content-Type: application/json
+X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
+
+
+
+###
+POST http://localhost:8080/api/v1/matching
+Content-Type: application/json
+X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
+
+{
+  "room_id": 2,
+  "participants": [1, 2, 3]
+}
+
+###

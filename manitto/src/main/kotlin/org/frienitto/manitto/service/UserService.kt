@@ -26,7 +26,6 @@ class UserService(private val userRepository: UserRepository) {
     fun signUp(signUpDto: SignUpDto): UserDto {
         val user = User.newUser(username = signUpDto.username, description = signUpDto.description, imageCode = signUpDto.imageCode, email = signUpDto.email, password = signUpDto.password)
         userRepository.save(user)
-
         return UserDto.from(user)
     }
 
@@ -36,7 +35,6 @@ class UserService(private val userRepository: UserRepository) {
         if (user.password != signInDto.password) {
             throw NonAuthorizationException()
         }
-
         return AccessToken(user.token, user.tokenExpiresDate)
     }
 }

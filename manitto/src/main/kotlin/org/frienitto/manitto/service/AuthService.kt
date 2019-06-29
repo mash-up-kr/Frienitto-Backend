@@ -17,7 +17,7 @@ class AuthService(private val emailService: EmailService, private val userReposi
     //TODO Redis를 사용하기 전 임시로 사용할 컨테이너 Scale out 할 경우 제거 후 Redis를 이용해야 합니다. (좀 더 추상화 할 수 없을까??)
     //TODO 전부 다 Redis사용해야함
     private val authCodeMap: MutableMap<String, String> = ConcurrentHashMap()
-    private val tokenSet: MutableSet<String> = Collections.synchronizedSet(HashSet())
+    private val tokenSet: MutableSet<String> = Collections.synchronizedSet(setOf("TESTTOKEN"))
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthService::class.java)
