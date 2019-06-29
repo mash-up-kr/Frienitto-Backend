@@ -1,5 +1,6 @@
-package org.frienitto.manitto.domain
+package org.frienitto.manitto.dto
 
+import org.frienitto.manitto.dto.Participant
 import java.time.LocalDate
 import java.util.*
 import javax.persistence.Entity

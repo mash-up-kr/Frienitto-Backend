@@ -11,8 +11,7 @@ class Room private constructor(
         owner: User,
         title: String,
         code: String,
-        expiresDate: LocalDate,
-        participants: List<Participant>
+        expiresDate: LocalDate
 ) {
 
     @Id
@@ -65,8 +64,8 @@ class Room private constructor(
     }
 
     companion object {
-        fun newRoom(owner: User, title: String, code: String, expiresDate: LocalDate, participants: List<Participant>): Room {
-            return Room(owner, title, code, expiresDate, participants).apply {
+        fun newRoom(owner: User, title: String, code: String, expiresDate: LocalDate): Room {
+            return Room(owner, title, code, expiresDate).apply {
                 this.createdBy = owner.nickname
                 this.updatedBy = owner.nickname
             }

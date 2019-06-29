@@ -1,16 +1,13 @@
-package org.frienitto.manitto.domain
+package org.frienitto.manitto.dto
 
 import javax.validation.constraints.NotBlank
 
 data class Participant(
-
         val id: Long? = 0,
 
         @get: NotBlank
         val userName: String = "",
 
         @get: NotBlank
-        val image_code: String? = ""
+        val image_code: Int?
 )
-
-//{"id": 1, "username": "한태웅", "image_code": 1}
