@@ -3,6 +3,13 @@ spring:
     active: default
   jpa:
     open-in-view: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gksxodnd007@gmail.com
+    password: Tkfkd753&1@
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
 
 ---
 
