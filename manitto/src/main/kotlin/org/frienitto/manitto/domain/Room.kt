@@ -1,6 +1,8 @@
 package org.frienitto.manitto.domain
 
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -8,7 +10,9 @@ import javax.persistence.*
 class Room private constructor(
         owner: User,
         title: String,
-        code: String
+        code: String,
+        expiresDate: LocalDate,
+        participants: List<Participant>
 ) {
 
     @Id
@@ -31,6 +35,7 @@ class Room private constructor(
         private set(value) {
             field = value
         }
+
     lateinit var createdAt: LocalDateTime
     var createdBy: String? = null
         private set(value) {
@@ -40,7 +45,11 @@ class Room private constructor(
         private set(value) {
             field = value
         }
+
+    lateinit var expiresDate: LocalDate
+
     lateinit var updatedAt: LocalDateTime
+
     var updatedBy: String? = null
         private set(value) {
             field = value
@@ -56,8 +65,8 @@ class Room private constructor(
     }
 
     companion object {
-        fun newRoom(owner: User, title: String, code: String): Room {
-            return Room(owner, title, code).apply {
+        fun newRoom(owner: User, title: String, code: String, expiresDate: LocalDate, participants: List<Participant>): Room {
+            return Room(owner, title, code, expiresDate, participants).apply {
                 this.createdBy = owner.nickname
                 this.updatedBy = owner.nickname
             }
