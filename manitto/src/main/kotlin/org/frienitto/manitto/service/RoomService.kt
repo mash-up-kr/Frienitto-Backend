@@ -1,23 +1,22 @@
 package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Room
-import org.frienitto.manitto.dto.RoomResponse
 import org.frienitto.manitto.domain.User
-import org.frienitto.manitto.dto.Participant
-import org.frienitto.manitto.dto.Response
-import org.frienitto.manitto.dto.RoomRequest
+import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.repository.RoomRepository
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class RoomService(private val roomRepository: RoomRepository, private val userRoomMapService: UserRoomMapService) {
 
-    fun createRoom(owner: User, request: RoomRequest): Response<RoomResponse> {
+    @Transactional
+    fun createRoom(owner: User, request: RoomRequest): Response<RoomDto> {
         val room = roomRepository.save(Room.newRoom(owner, request.name, request.code, request.expiresDate))
-        val participant = Participant(owner.id, owner.username, owner.imageCode)
-        val participantList: List<Participant> = listOf(participant)
-        return Response(201, "방 생성 완료", RoomResponse(
-                room.id, room.title, room.expiresDate, "", participantList))
+        val participant = UserDto.of(owner.id!!, owner.username, owner.imageCode)
+
+        return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, RoomDto.from(room, listOf(participant)))
     }
 
     fun getAllRoom(): Response<List<Room>> {
@@ -25,10 +24,10 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
         return Response(201, "방 생성 완료", rooms)
     }
 
-    fun getRoomDetail(room_id:Long): Response<RoomResponse>{
+    fun getRoomDetail(room_id:Long): Response<RoomDto>{
         val room = roomRepository.findById(room_id).get() // 없을 때 예외 처리 필요
         val participants = userRoomMapService.findUsersByRoomId(room_id)
-        return Response(200, "조회 성공", RoomResponse(
-               room.id, room.title, room.expiresDate, room.url, participants))
+        return Response(200, "조회 성공", RoomDto(
+               room.id!!, room.title, room.expiresDate, room.url, participants))
     }
 }

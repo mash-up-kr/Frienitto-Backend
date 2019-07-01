@@ -3,7 +3,7 @@ package org.frienitto.manitto.controller
 import org.frienitto.manitto.dto.IssueCodeRequest
 import org.frienitto.manitto.dto.Response
 import org.frienitto.manitto.dto.VerifyCodeRequest
-import org.frienitto.manitto.dto.VerifyCodeResponse
+import org.frienitto.manitto.dto.RegisterToken
 import org.frienitto.manitto.service.AuthService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,8 +22,8 @@ class AuthController(private val authService: AuthService) {
     }
 
     @PostMapping(value = ["/verify/code"])
-    fun verifyCode(@RequestBody body: VerifyCodeRequest): Response<VerifyCodeResponse> {
+    fun verifyCode(@RequestBody body: VerifyCodeRequest): Response<RegisterToken> {
         val registerToken = authService.verifyCode(body.code)
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, VerifyCodeResponse(registerToken))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, RegisterToken(registerToken))
     }
 }

@@ -11,8 +11,6 @@ import org.frienitto.manitto.repository.RoomRepository
 import org.frienitto.manitto.repository.UserRepository
 import org.frienitto.manitto.repository.UserRoomMapRepository
 import org.springframework.stereotype.Service
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.streams.toList
 
 @Service
@@ -21,28 +19,28 @@ class UserRoomMapService(private val usersRoomMapRepository: UserRoomMapReposito
                          private val userRepository: UserRepository,
                          private val missionRepository: MissionRepository) {
 
-    fun findUsersByRoomId(roomId: Long): List<Participant> {
+    fun findUsersByRoomId(roomId: Long): List<UserDto> {
         val userRoomMaps = usersRoomMapRepository.findByRoomId(roomId)
         return userRoomMaps.stream()
                 .map {
-                    Participant(it.id, it.username, it.imageCode)
+                    UserDto.of(it.id!!, it.username, it.imageCode)
                 }.toList()
     }
 
-    fun joinRoomsByRoomId(user: User, roomId: Long): Response<RoomResponse> {
+    fun joinRoomsByRoomId(user: User, roomId: Long): Response<RoomDto> {
         val room = roomRepository.findById(roomId).get() //예외 처리
 
         usersRoomMapRepository.save(UserRoomMap.joinRoom(room.id, user.id, user.username, room.expiresDate, user.imageCode))
         val userRoomMaps = usersRoomMapRepository.findByRoomId(roomId)
         val participants = userRoomMaps.stream()
                 .map {
-                    Participant(it.id, it.username, it.imageCode)
+                    UserDto.of(it.id!!, it.username, it.imageCode)
                 }.toList()
-        return Response(200, "방 입장 성공", RoomResponse(
-                room.id, room.title, room.expiresDate, room.url, participants))
+        return Response(200, "방 입장 성공", RoomDto(
+                room.id!!, room.title, room.expiresDate, room.url, participants))
     }
 
-    fun matchingStart(matchRequest: MatchRequest): Response<MatchResponse> {
+    fun matchingStart(matchRequest: MatchRequest): Response<MatchResultDto> {
         val participants = matchRequest.participants
         var a = participants.drop(1) + participants[0]
         var b = participants.take(participants.size - 1) + participants[participants.size - 1]
@@ -51,6 +49,6 @@ class UserRoomMapService(private val usersRoomMapRepository: UserRoomMapReposito
             missions.add(Mission.newMission(a[x], b[x], matchRequest.roomId, MissionType.USER, MissionStatus.DELIVERY, "Test"))
         }
         missionRepository.saveAll(missions)
-        return Response(200, "매치 성공", MatchResponse(missions))
+        return Response(200, "매치 성공", MatchResultDto(missions))
     }
 }

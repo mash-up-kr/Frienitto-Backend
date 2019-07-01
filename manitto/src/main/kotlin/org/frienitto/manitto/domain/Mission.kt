@@ -2,8 +2,6 @@ package org.frienitto.manitto.domain
 
 import org.frienitto.manitto.domain.constant.MissionStatus
 import org.frienitto.manitto.domain.constant.MissionType
-import org.frienitto.manitto.dto.Participant
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
 

@@ -1,10 +1,5 @@
 package org.frienitto.manitto.service
 
-import org.frienitto.manitto.domain.Room
-import org.frienitto.manitto.dto.Participant
-import org.frienitto.manitto.dto.Response
-import org.frienitto.manitto.dto.RoomRequest
-import org.frienitto.manitto.dto.RoomResponse
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.dto.AccessToken
 import org.frienitto.manitto.dto.SignInDto
@@ -18,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService(private val userRepository: UserRepository) {
 
+    @Transactional(readOnly = true)
     fun getUserByToken(userToken: String): User {
         return userRepository.findByToken(userToken) ?: throw NonAuthorizationException()
     }
