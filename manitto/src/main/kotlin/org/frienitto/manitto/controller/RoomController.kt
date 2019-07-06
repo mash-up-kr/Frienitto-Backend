@@ -29,13 +29,14 @@ class RoomController(
     }
 
     @GetMapping("room/{id}")
-    fun getRoomDetail(@PathVariable("id") room_id: Long): Response<RoomDto> {
-        return roomService.getRoomDetail(room_id)
+    fun getRoomDetail(@PathVariable("id") roomId: Long): Response<RoomDto> {
+        return roomService.getRoomDetailById(roomId)
     }
 
+    //TODO 페이징 처리 해야함
     @GetMapping("room/list")
     fun getRoomList(): Response<List<Room>> {
-        return roomService.getAllRoom()
+        return roomService.getRoomList()
     }
 
     @PostMapping("matching")

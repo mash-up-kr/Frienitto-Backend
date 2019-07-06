@@ -15,9 +15,8 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
     @Transactional
     fun createRoom(owner: User, request: RoomRequest): Response<RoomDto> {
         val room = roomRepository.save(Room.newRoom(owner, request.name, request.code, request.expiresDate))
-        val participant = UserDto.of(owner.id!!, owner.username, owner.imageCode)
 
-        return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, RoomDto.from(room, listOf(participant)))
+        return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, RoomDto.from(room, listOf(ParticipantDto.from(owner))))
     }
 
     @Transactional(readOnly = true)
@@ -25,15 +24,18 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
         return roomRepository.findById(id).orElseThrow { ResourceNotFoundException() }
     }
 
-    fun getAllRoom(): Response<List<Room>> {
+    //TODO 페이징 처리 해야함
+    @Transactional(readOnly = true)
+    fun getRoomList(): Response<List<Room>> {
         val rooms = roomRepository.findAll()
-        return Response(201, "방 생성 완료", rooms)
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, rooms)
     }
 
-    fun getRoomDetail(room_id:Long): Response<RoomDto>{
-        val room = roomRepository.findById(room_id).get() // 없을 때 예외 처리 필요
-        val participants = userRoomMapService.findUsersByRoomId(room_id)
-        return Response(200, "조회 성공", RoomDto(
-               room.id!!, room.title, room.expiresDate, room.url, participants))
+    @Transactional(readOnly = true)
+    fun getRoomDetailById(roomId: Long): Response<RoomDto>{
+        val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
+        val participants = userRoomMapService.getParticipantsByRoomId(roomId)
+
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, RoomDto.from(room, participants))
     }
 }
