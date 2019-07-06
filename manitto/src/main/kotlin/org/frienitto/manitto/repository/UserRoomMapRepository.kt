@@ -5,6 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRoomMapRepository : JpaRepository<UserRoomMap, Long?> {
 
-    fun findByRoomId(roomId: Long):List<UserRoomMap>
-
+    fun findByRoomId(roomId: Long): List<UserRoomMap>
 }

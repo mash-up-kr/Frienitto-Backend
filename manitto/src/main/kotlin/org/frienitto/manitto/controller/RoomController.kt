@@ -23,9 +23,9 @@ class RoomController(
     }
 
     @GetMapping("join/room/{id}")
-    fun joinRoom(@RequestHeader("X-Authorization") token: String, @PathVariable("id") room_id: Long): Response<RoomDto> {
+    fun joinRoom(@RequestHeader("X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
         val user = userService.getUserByToken(token)
-        return userRoomMapService.joinRoomsByRoomId(user, room_id)
+        return userRoomMapService.joinRoom(user, roomId)
     }
 
     @GetMapping("room/{id}")

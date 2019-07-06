@@ -6,38 +6,45 @@ import org.frienitto.manitto.domain.UserRoomMap
 import org.frienitto.manitto.domain.constant.MissionStatus
 import org.frienitto.manitto.domain.constant.MissionType
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.MissionRepository
 import org.frienitto.manitto.repository.RoomRepository
 import org.frienitto.manitto.repository.UserRepository
 import org.frienitto.manitto.repository.UserRoomMapRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.streams.toList
 
 @Service
-class UserRoomMapService(private val usersRoomMapRepository: UserRoomMapRepository,
+class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepository,
                          private val roomRepository: RoomRepository,
                          private val userRepository: UserRepository,
                          private val missionRepository: MissionRepository) {
 
-    fun findUsersByRoomId(roomId: Long): List<UserDto> {
-        val userRoomMaps = usersRoomMapRepository.findByRoomId(roomId)
-        return userRoomMaps.stream()
-                .map {
-                    UserDto.of(it.id!!, it.username, it.imageCode)
-                }.toList()
+    @Transactional(readOnly = true)
+    fun getParticipantsByRoomId(roomId: Long): List<ParticipantDto> {
+        return getByRoomId(roomId).stream()
+                .map { ParticipantDto.of(it.userId, it.username, it.imageCode) }
+                .toList()
     }
 
-    fun joinRoomsByRoomId(user: User, roomId: Long): Response<RoomDto> {
-        val room = roomRepository.findById(roomId).get() //예외 처리
+    @Transactional
+    fun joinRoom(user: User, roomId: Long): Response<RoomDto> {
+        val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
 
-        usersRoomMapRepository.save(UserRoomMap.joinRoom(room.id, user.id, user.username, room.expiresDate, user.imageCode))
-        val userRoomMaps = usersRoomMapRepository.findByRoomId(roomId)
-        val participants = userRoomMaps.stream()
-                .map {
-                    UserDto.of(it.id!!, it.username, it.imageCode)
-                }.toList()
-        return Response(200, "방 입장 성공", RoomDto(
-                room.id!!, room.title, room.expiresDate, room.url, participants))
+        userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room.id!!, user.id!!, user.username, room.expiresDate, user.imageCode))
+        val maps = getByRoomId(roomId)
+        val participants = maps.stream()
+                .map { ParticipantDto.of(it.userId, it.username, it.imageCode) }
+                .toList()
+
+        return Response(200, "방 입장 성공", RoomDto.from(room, participants))
+    }
+
+    @Transactional(readOnly = true)
+    fun getByRoomId(roomId: Long): List<UserRoomMap> {
+        val maps = userRoomMapRepository.findByRoomId(roomId)
+        return if (maps.isEmpty()) throw ResourceNotFoundException() else maps
     }
 
     fun matchingStart(matchRequest: MatchRequest): Response<MatchResultDto> {

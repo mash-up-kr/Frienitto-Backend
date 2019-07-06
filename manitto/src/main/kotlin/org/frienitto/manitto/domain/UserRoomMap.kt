@@ -7,35 +7,30 @@ import javax.persistence.*
 @Entity
 @Table(name = "user_room_maps")
 class UserRoomMap private constructor(
-        roomId: Long?,
-        userId: Long?,
+        roomId: Long,
+        userId: Long,
         username: String,
         expiredDate: LocalDate,
         imageCode: Int
 ) {
 
     companion object{
-        fun joinRoom(roomId: Long?, userId: Long?, username: String, expiresDate: LocalDate, imageCode: Int): UserRoomMap {
-            return UserRoomMap(roomId ,userId,username, expiresDate, imageCode).apply {
-                this.roomId = roomId
-                this.userId = userId
-                this.username = username
-                this.expiredDate = expiredDate
-                this.imageCode = imageCode
-            }
+        fun newUserRoomMap(roomId: Long, userId: Long, username: String, expiresDate: LocalDate, imageCode: Int): UserRoomMap {
+            return UserRoomMap(roomId ,userId, username, expiresDate, imageCode)
         }
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
         private set(value) {
             field = value
         }
-    var roomId: Long? = roomId
+    var roomId: Long = roomId
         private set(value) {
             field = value
         }
-    var userId: Long? = userId
+    var userId: Long = userId
         private set(value) {
             field = value
         }
@@ -54,20 +49,17 @@ class UserRoomMap private constructor(
             field = value
         }
     lateinit var createdAt: LocalDateTime
-    var createdBy: String? = null
-        private set(value) {
-            field = value
-        }
     lateinit var updatedAt: LocalDateTime
-    var updatedBy: String? = null
-        private set(value) {
-            field = value
-        }
 
     @PrePersist
     fun onPersist() {
         val now = LocalDateTime.now()
         this.createdAt = now
         this.updatedAt = now
+    }
+
+    @PreUpdate
+    fun onUpdate() {
+        this.updatedAt = LocalDateTime.now()
     }
 }

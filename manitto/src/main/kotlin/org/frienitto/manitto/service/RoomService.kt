@@ -3,6 +3,7 @@ package org.frienitto.manitto.service
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -17,6 +18,11 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
         val participant = UserDto.of(owner.id!!, owner.username, owner.imageCode)
 
         return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, RoomDto.from(room, listOf(participant)))
+    }
+
+    @Transactional(readOnly = true)
+    fun getById(id: Long): Room {
+        return roomRepository.findById(id).orElseThrow { ResourceNotFoundException() }
     }
 
     fun getAllRoom(): Response<List<Room>> {

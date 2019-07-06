@@ -11,4 +11,9 @@ class GlobalExceptionHandler {
     fun nonAuthExceptionHandler(exception: NonAuthorizationException): ErrorInfo {
         return ErrorInfo(exception.errorCode, exception.errorMsg)
     }
+
+    @ExceptionHandler(value = [ResourceNotFoundException::class])
+    fun resourceNotFoundExceptionHandler(exception: ResourceNotFoundException): ErrorInfo {
+        return ErrorInfo(exception.errorCode, exception.errorMsg)
+    }
 }
