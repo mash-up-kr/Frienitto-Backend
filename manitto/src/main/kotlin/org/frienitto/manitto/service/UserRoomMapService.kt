@@ -8,8 +8,6 @@ import org.frienitto.manitto.domain.constant.MissionType
 import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.MissionRepository
-import org.frienitto.manitto.repository.RoomRepository
-import org.frienitto.manitto.repository.UserRepository
 import org.frienitto.manitto.repository.UserRoomMapRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,8 +15,7 @@ import kotlin.streams.toList
 
 @Service
 class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepository,
-                         private val roomRepository: RoomRepository,
-                         private val userRepository: UserRepository,
+                         private val roomService: RoomService,
                          private val missionRepository: MissionRepository) {
 
     @Transactional(readOnly = true)
@@ -30,7 +27,7 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
 
     @Transactional
     fun joinRoom(user: User, roomId: Long): Response<RoomDto> {
-        val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
+        val room = roomService.getById(roomId)
 
         userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room.id!!, user.id!!, user.username, room.expiresDate, user.imageCode))
         val maps = getByRoomId(roomId)
