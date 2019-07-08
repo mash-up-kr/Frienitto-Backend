@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-@Table(name = "users_rooms_map")
+@Table(name = "user_room_maps")
 class UserRoomMap private constructor(
         roomId: Long?,
         userId: Long?,
