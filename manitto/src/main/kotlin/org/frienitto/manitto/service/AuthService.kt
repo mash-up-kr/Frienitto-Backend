@@ -1,6 +1,5 @@
 package org.frienitto.manitto.service
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config.log
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.repository.UserRepository
 import org.frienitto.manitto.util.generateAuthCode
@@ -9,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashSet
 
 @Service
 class AuthService(private val emailService: EmailService, private val userRepository: UserRepository) {
