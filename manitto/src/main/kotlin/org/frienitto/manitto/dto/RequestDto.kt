@@ -1,10 +1,11 @@
 package org.frienitto.manitto.dto
 
+import org.frienitto.manitto.domain.constant.MissionType
 import java.time.LocalDate
 import javax.validation.constraints.Future
 import javax.validation.constraints.NotBlank
 
-data class MatchRequest(val roomId:Long, val participants: List<Long>)
+data class MatchRequest(val roomId:Long, val type: MissionType, val participants: List<Long>)
 
 data class IssueCodeRequest(val receiverInfo: String, val type: String)
 

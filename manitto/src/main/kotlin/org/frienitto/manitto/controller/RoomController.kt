@@ -38,9 +38,4 @@ class RoomController(
     fun getRoomList(): Response<List<Room>> {
         return roomService.getRoomList()
     }
-
-    @PostMapping("matching")
-    fun matchStart(@RequestBody body: MatchRequest): Response<MatchResultDto> {
-        return userRoomMapService.matchingStart(body)
-    }
 }
