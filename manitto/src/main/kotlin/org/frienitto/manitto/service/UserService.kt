@@ -6,6 +6,7 @@ import org.frienitto.manitto.dto.SignInDto
 import org.frienitto.manitto.dto.SignUpDto
 import org.frienitto.manitto.dto.UserDto
 import org.frienitto.manitto.exception.NonAuthorizationException
+import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,7 +27,7 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     fun signIn(signInDto: SignInDto): AccessToken {
-        val user = userRepository.findByEmail(signInDto.email) ?: throw NonAuthorizationException()
+        val user = userRepository.findByEmail(signInDto.email) ?: throw ResourceNotFoundException()
 
         if (user.password != signInDto.password) {
             throw NonAuthorizationException()

@@ -6,7 +6,8 @@ plugins {
     id("io.spring.dependency-management") version "1.0.7.RELEASE" apply false
     id("org.jetbrains.kotlin.plugin.spring") version "1.3.30" apply false
     id("org.jetbrains.kotlin.plugin.jpa") version "1.3.30" apply false
-    kotlin("jvm") version "1.3.30" apply false
+    kotlin("jvm") version "1.3.30"
+    kotlin("kapt") version "1.3.30"
     `java-library`
 }
 
@@ -50,6 +51,7 @@ subprojects {
 }
 
 project(":manitto") {
+    extra["querydslVersion"] = "4.2.1"
     group = "org.frienitto.manitto"
 
     apply(plugin = "kotlin-jpa")
@@ -61,6 +63,9 @@ project(":manitto") {
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-mail")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("com.querydsl:querydsl-jpa:${extra["querydslVersion"]}")
+        kapt("com.querydsl:querydsl-apt:${extra["querydslVersion"]}:jpa")
+        kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
 
         runtimeOnly("com.h2database:h2")
         runtimeOnly("mysql:mysql-connector-java")

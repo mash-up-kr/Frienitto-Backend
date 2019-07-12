@@ -6,6 +6,8 @@ import org.frienitto.manitto.domain.UserRoomMap
 import org.frienitto.manitto.domain.constant.MissionStatus
 import org.frienitto.manitto.domain.constant.MissionType
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.NonAuthorizationException
+import org.frienitto.manitto.exception.NotSupportException
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.MissionRepository
 import org.frienitto.manitto.repository.RoomRepository
@@ -22,47 +24,79 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
 
     @Transactional(readOnly = true)
     fun getParticipantsByRoomId(roomId: Long): List<ParticipantDto> {
-        return getByRoomId(roomId).stream()
-                .map { ParticipantDto.of(it.userId, it.username, it.imageCode) }
+        return getByRoomIdWithAll(roomId).stream()
+                .map { ParticipantDto.of(it.user.id!!, it.username, it.imageCode) }
                 .toList()
     }
 
     @Transactional
-    fun joinRoom(user: User, roomId: Long): Response<RoomDto> {
+    fun joinRoomByTitle(user: User, request: RoomJoinRequest): RoomDto {
+        val room = roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException()
+
+        if (room.code != request.code) {
+            throw NonAuthorizationException()
+        }
+
+        userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
+
+        return RoomDto.from(room)
+    }
+
+    @Transactional
+    fun joinRoomById(user: User, roomId: Long, code: String): RoomDto {
         val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
 
-        userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room.id!!, user.id!!, user.username, room.expiresDate, user.imageCode))
-        val maps = getByRoomId(roomId)
-        val participants = maps.stream()
-                .map { ParticipantDto.of(it.userId, it.username, it.imageCode) }
-                .toList()
+        if (room.code != code) {
+            throw NonAuthorizationException()
+        }
 
-        return Response(200, "방 입장 성공", RoomDto.from(room, participants))
+        userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
+
+        return RoomDto.from(room)
     }
 
     @Transactional(readOnly = true)
-    fun getByRoomId(roomId: Long): List<UserRoomMap> {
-        val maps = userRoomMapRepository.findByRoomId(roomId)
+    fun getByRoomIdWithAll(roomId: Long): List<UserRoomMap> {
+        val maps = userRoomMapRepository.findByRoomIdWithAllRelationship(roomId)
         return if (maps.isEmpty()) throw ResourceNotFoundException() else maps
     }
 
-    fun match(matchRequest: MatchRequest): Response<MatchResultDto> {
+    @Transactional
+    fun match(matchRequest: MatchRequest): MatchResultDto {
+        val room = roomRepository.findById(matchRequest.roomId).orElseThrow { ResourceNotFoundException() }
+        room.matched()
+        roomRepository.save(room)
+
         if (matchRequest.type.isUserMission()) {
-
+            return MatchResultDto(
+                    room.id!!,
+                    room.status,
+                    matchUser(matchRequest).asSequence()
+                            .map { MissionDto.from(it) }
+                            .toList()
+            )
+        } else {
+            throw NotSupportException()
         }
-
-        return Response(200, "매치 성공", MatchResultDto(matchUser(matchRequest)))
     }
 
-    private fun matchUser(matchRequest: MatchRequest): MutableList<Mission> {
-        val participants = matchRequest.participants
-        val a = participants.drop(1) + participants[0]
-        val b = participants.take(participants.size - 1) + participants[participants.size - 1]
+    private fun matchUser(matchRequest: MatchRequest): List<Mission> {
+        val participants = getParticipantsByRoomId(matchRequest.roomId)
+                .asSequence()
+                .map { it.id }
+                .toList()
+                .shuffled()
+                .toLongArray()
         val missions = mutableListOf<Mission>()
-        for (x in 0 until participants.size) {
-            missions.add(Mission.newMission(a[x], b[x], matchRequest.roomId, MissionType.USER, MissionStatus.DELIVERY, ""))
+
+        for (index in 0 until participants.size) {
+            if (index == participants.size - 1) {
+                missions.add(Mission.newMission(participants[index], participants[0], matchRequest.roomId, MissionType.USER, MissionStatus.DELIVERY, ""))
+                break
+            }
+            missions.add(Mission.newMission(participants[index], participants[index + 1], matchRequest.roomId, MissionType.USER, MissionStatus.DELIVERY, ""))
         }
-        missionRepository.saveAll(missions)
-        return missions
+
+        return missionRepository.saveAll(missions)
     }
 }

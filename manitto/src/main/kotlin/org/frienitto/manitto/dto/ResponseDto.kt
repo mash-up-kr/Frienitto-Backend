@@ -3,16 +3,19 @@ package org.frienitto.manitto.dto
 import org.frienitto.manitto.domain.Mission
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
+import org.frienitto.manitto.domain.constant.MissionStatus
+import org.frienitto.manitto.domain.constant.MissionType
+import org.frienitto.manitto.domain.constant.RoomStatus
 import java.time.LocalDate
 import javax.validation.constraints.NotBlank
 
-data class RoomDto(val id: Long, @get: NotBlank val title: String, val expiresDate: LocalDate, val url: String, val participants: List<ParticipantDto>?) {
+data class RoomDto(val id: Long, @get: NotBlank val title: String, val status: RoomStatus, val expiresDate: LocalDate, val participants: List<ParticipantDto>?) {
 
     companion object {
 
         @JvmStatic
         fun from(room: Room, participants: List<ParticipantDto>?): RoomDto {
-            return RoomDto(room.id!!, room.title, room.expiresDate, room.url, participants)
+            return RoomDto(room.id!!, room.title, room.status, room.expiresDate, participants)
         }
 
         @JvmStatic
@@ -22,7 +25,16 @@ data class RoomDto(val id: Long, @get: NotBlank val title: String, val expiresDa
     }
 }
 
-data class MatchResultDto(val missions: List<Mission>)
+data class MatchResultDto(val roomId: Long, val roomStatus: RoomStatus, val missionDtos: List<MissionDto>)
+
+data class MissionDto(val id: Long, val sourceId: Long, val targetId: Long, val description: String, val status: MissionStatus, val type: MissionType) {
+
+    companion object {
+        fun from(mission: Mission): MissionDto {
+            return MissionDto(mission.id!!, mission.sourceId, mission.targetId, mission.description, mission.status, mission.type)
+        }
+    }
+}
 
 data class RegisterToken(val registerToken: String)
 

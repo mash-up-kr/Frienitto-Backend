@@ -10,13 +10,13 @@ import javax.persistence.*
 class Mission private constructor(
         sourceId: Long,
         targetId: Long,
-        roomId: Long,
+        roomId: Long?,
         type: MissionType,
         status: MissionStatus,
         description: String
 ) {
     companion object {
-        fun newMission(sourceId: Long, targetId: Long, roomId: Long, type: MissionType, status: MissionStatus, description: String): Mission {
+        fun newMission(sourceId: Long, targetId: Long, roomId: Long?, type: MissionType, status: MissionStatus, description: String): Mission {
             return Mission(sourceId, targetId, roomId, type, status, description).apply {
                 this.sourceId = sourceId
                 this.targetId = targetId

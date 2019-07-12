@@ -1,5 +1,6 @@
 package org.frienitto.manitto.domain
 
+import org.frienitto.manitto.domain.constant.RoomStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -10,7 +11,7 @@ class Room private constructor(
         owner: User,
         title: String,
         code: String,
-        url: String = "",
+        status: RoomStatus,
         expiresDate: LocalDate
 ) {
 
@@ -34,7 +35,8 @@ class Room private constructor(
         private set(value) {
             field = value
         }
-    var url: String = url
+    @Enumerated(EnumType.STRING)
+    var status: RoomStatus = status
         private set(value) {
             field = value
         }
@@ -64,11 +66,19 @@ class Room private constructor(
 
     companion object {
         fun newRoom(owner: User, title: String, code: String, expiresDate: LocalDate): Room {
-            return Room(owner = owner, title = title, code = code, expiresDate = expiresDate).apply {
+            return Room(owner = owner, title = title, code = code, status = RoomStatus.CREATED, expiresDate = expiresDate).apply {
                 this.createdBy = owner.username
                 this.updatedBy = owner.username
                 this.expiresDate = expiresDate
             }
         }
+    }
+
+    fun matched() {
+        this.status = RoomStatus.MATCHED
+    }
+
+    fun expired() {
+        this.status = RoomStatus.EXPIRED
     }
 }
