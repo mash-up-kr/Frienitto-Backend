@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1")
 class MatchingController(private val userRoomMapService: UserRoomMapService) {
 
-    @PostMapping("matching")
+    @PostMapping("/matching")
     fun match(@RequestBody body: MatchRequest): Response<MatchResultDto> {
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.match(body))
     }
