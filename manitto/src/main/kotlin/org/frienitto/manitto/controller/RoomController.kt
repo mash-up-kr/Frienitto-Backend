@@ -26,7 +26,7 @@ class RoomController(
         return roomService.createRoom(user, request)
     }
 
-    @GetMapping("/join/room")
+    @PostMapping("/join/room")
     fun joinRoom(@RequestHeader("X-Authorization") token: String, @RequestBody request: RoomJoinRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.joinRoomByTitle(user, request))
