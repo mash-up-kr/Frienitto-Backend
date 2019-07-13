@@ -26,19 +26,19 @@ class RoomController(
         return roomService.createRoom(user, request)
     }
 
-    @GetMapping("join/room")
+    @GetMapping("/join/room")
     fun joinRoom(@RequestHeader("X-Authorization") token: String, @RequestBody request: RoomJoinRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.joinRoomByTitle(user, request))
     }
 
-    @GetMapping("room/{id}")
+    @GetMapping("/room/{id}")
     fun getRoomDetail(@PathVariable("id") roomId: Long): Response<RoomDto> {
         return roomService.getRoomDetailById(roomId)
     }
 
     //TODO 페이징 처리 해야함
-    @GetMapping("room/list")
+    @GetMapping("/room/list")
     fun getRoomList(): Response<List<RoomDto>> {
         return Response(
                 HttpStatus.OK.value(),
