@@ -25,7 +25,7 @@ data class RoomDto(val id: Long, @get: NotBlank val title: String, val status: R
     }
 }
 
-data class MatchResultDto(val roomId: Long, val roomStatus: RoomStatus, val missionDtos: List<MissionDto>)
+data class MatchResultDto(val roomId: Long, val roomStatus: RoomStatus, val missions: List<MissionDto>)
 
 data class MissionDto(val id: Long, val sourceId: Long, val targetId: Long, val description: String, val status: MissionStatus, val type: MissionType) {
 

@@ -2,20 +2,29 @@ package org.frienitto.manitto.controller
 
 import org.frienitto.manitto.dto.MatchRequest
 import org.frienitto.manitto.dto.MatchResultDto
+import org.frienitto.manitto.dto.MissionDto
 import org.frienitto.manitto.dto.Response
+import org.frienitto.manitto.service.MissionService
 import org.frienitto.manitto.service.UserRoomMapService
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1")
-class MatchingController(private val userRoomMapService: UserRoomMapService) {
+class MatchingController(private val userRoomMapService: UserRoomMapService, private val missionService: MissionService) {
 
     @PostMapping("/matching")
     fun match(@RequestBody body: MatchRequest): Response<MatchResultDto> {
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.match(body))
+    }
+
+    @GetMapping("/matching-info/room/{id}")
+    fun getUserMatchingInfo(@PathVariable(name = "id") roomId: Long): Response<List<MissionDto>> {
+        val result = missionService.getUserMissionsByRoomId(roomId)
+                .asSequence()
+                .map { MissionDto.from(it) }
+                .toList()
+
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
 }
