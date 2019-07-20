@@ -1,8 +1,8 @@
 package org.frienitto.manitto.domain
 
+import org.frienitto.manitto.domain.constant.RoomStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -11,6 +11,7 @@ class Room private constructor(
         owner: User,
         title: String,
         code: String,
+        status: RoomStatus,
         expiresDate: LocalDate
 ) {
 
@@ -34,21 +35,21 @@ class Room private constructor(
         private set(value) {
             field = value
         }
-
+    @Enumerated(EnumType.STRING)
+    var status: RoomStatus = status
+        private set(value) {
+            field = value
+        }
+    var expiresDate: LocalDate = expiresDate
+        private set(value) {
+            field = value
+        }
     lateinit var createdAt: LocalDateTime
     var createdBy: String? = null
         private set(value) {
             field = value
         }
-    var url: String? = null
-        private set(value) {
-            field = value
-        }
-
-    lateinit var expiresDate: LocalDate
-
     lateinit var updatedAt: LocalDateTime
-
     var updatedBy: String? = null
         private set(value) {
             field = value
@@ -65,11 +66,19 @@ class Room private constructor(
 
     companion object {
         fun newRoom(owner: User, title: String, code: String, expiresDate: LocalDate): Room {
-            return Room(owner, title, code, expiresDate).apply {
-                this.createdBy = owner.nickname
-                this.updatedBy = owner.nickname
+            return Room(owner = owner, title = title, code = code, status = RoomStatus.CREATED, expiresDate = expiresDate).apply {
+                this.createdBy = owner.username
+                this.updatedBy = owner.username
                 this.expiresDate = expiresDate
             }
         }
+    }
+
+    fun matched() {
+        this.status = RoomStatus.MATCHED
+    }
+
+    fun expired() {
+        this.status = RoomStatus.EXPIRED
     }
 }

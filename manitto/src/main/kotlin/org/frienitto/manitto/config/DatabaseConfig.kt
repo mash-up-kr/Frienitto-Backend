@@ -27,7 +27,8 @@ import javax.sql.DataSource
 class DatabaseConfig {
 
     companion object {
-        val logger: Logger = LoggerFactory.getLogger(DatabaseConfig::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(DatabaseConfig::class.java)
+        const val PERSISTENCE_UNIT_NAME = "frienitto"
     }
 
     @Bean
@@ -41,6 +42,7 @@ class DatabaseConfig {
         vendorAdapter.setGenerateDdl(jpaProperties.isGenerateDdl)
 
         emf.jpaVendorAdapter = vendorAdapter
+        emf.persistenceUnitName = PERSISTENCE_UNIT_NAME
         emf.setJpaProperties(additionalProperties(jpaProperties, hibernateDdlAuto))
         emf.afterPropertiesSet()
 

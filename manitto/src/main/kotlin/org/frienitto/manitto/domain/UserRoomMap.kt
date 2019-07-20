@@ -1,41 +1,32 @@
 package org.frienitto.manitto.domain
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
 @Table(name = "user_room_maps")
 class UserRoomMap private constructor(
-        roomId: Long?,
-        userId: Long?,
+        room: Room,
+        user: User,
         username: String,
-        expiredDate: LocalDate,
         imageCode: Int
 ) {
 
-    companion object{
-        fun joinRoom(roomId: Long?, userId: Long?, username: String, expiresDate: LocalDate, imageCode: Int): UserRoomMap {
-            return UserRoomMap(roomId ,userId,username, expiresDate, imageCode).apply {
-                this.roomId = roomId
-                this.userId = userId
-                this.username = username
-                this.expiredDate = expiredDate
-                this.imageCode = imageCode
-            }
-        }
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
         private set(value) {
             field = value
         }
-    var roomId: Long? = roomId
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    var room: Room = room
         private set(value) {
             field = value
         }
-    var userId: Long? = userId
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    var user: User = user
         private set(value) {
             field = value
         }
@@ -43,31 +34,28 @@ class UserRoomMap private constructor(
         private set(value) {
             field = value
         }
-
     var imageCode: Int = imageCode
         private set(value){
             field = value
         }
-
-    var expiredDate: LocalDate = expiredDate
-        private set(value) {
-            field = value
-        }
     lateinit var createdAt: LocalDateTime
-    var createdBy: String? = null
-        private set(value) {
-            field = value
-        }
     lateinit var updatedAt: LocalDateTime
-    var updatedBy: String? = null
-        private set(value) {
-            field = value
-        }
 
     @PrePersist
     fun onPersist() {
         val now = LocalDateTime.now()
         this.createdAt = now
         this.updatedAt = now
+    }
+
+    @PreUpdate
+    fun onUpdate() {
+        this.updatedAt = LocalDateTime.now()
+    }
+
+    companion object{
+        fun newUserRoomMap(room: Room, user: User): UserRoomMap {
+            return UserRoomMap(room ,user, user.username, user.imageCode)
+        }
     }
 }

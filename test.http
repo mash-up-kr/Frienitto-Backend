@@ -23,7 +23,7 @@ Content-Type: application/json
 X-Register-Token: TESTTOKEN
 
 {
-  "username": "망나니휴~~~",
+  "username": "한태웅",
   "description": "망나니",
   "image_code": 1,
   "email": "gksxodnd00@naver.com",
@@ -42,40 +42,45 @@ Content-Type: application/json
 ### 룸 생성
 POST http://localhost:8080/api/v1/register/room
 Content-Type: application/json
-X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
+X-Authorization: 76C03F7BFF07F92ED53B14BDC1C7EE0E
 
 {
-  "token":"FEAA9DC8F3A7F5DFE6DEBCD3114947D6",
-  "name": "망나니들 모임",
+  "title": "망나니들 모임",
   "code": "dkaf931",
   "expires_date": "2020-01-01"
 }
 
 ### 룸 조인
-GET http://localhost:8080/api/v1/join/room/2
+POST http://localhost:8080/api/v1/join/room
 Content-Type: application/json
-X-Authorization: 4329A8A72B9AE1E4AB5C161A90CD5252
+X-Authorization: 1C86B939487C95365498889C524593F8
 
-### 룸 가져오기
+{
+  "title": "망나니들 모임",
+  "code": "dkaf931"
+}
+
+### 룸 리스트 가져오기
 GET http://localhost:8080/api/v1/room/list
 Content-Type: application/json
 X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
 
-###
-GET http://localhost:8080/api/v1/room/2
+### 방의 매칭 정보 가져오기
+GET http://localhost:8080/api/v1/matching-info/room/1
 Content-Type: application/json
 X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
 
+### 룸 정보 가져오기
+GET http://localhost:8080/api/v1/room/2
+X-Authorization: AF1C8FBD13559B5FFECA93BDC57749B6
 
-
-###
+### 마니또 매칭
 POST http://localhost:8080/api/v1/matching
 Content-Type: application/json
 X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
 
 {
   "room_id": 2,
-  "participants": [1, 2, 3]
+  "owner_id": 1,
+  "type": "USER"
 }
-
-###

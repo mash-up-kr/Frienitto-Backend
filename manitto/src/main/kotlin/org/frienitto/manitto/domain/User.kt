@@ -9,7 +9,7 @@ import javax.persistence.*
 @Table(name = "users")
 class User private constructor(
         username: String,
-        nickname: String,
+        nickname: String?,
         description: String,
         imageCode: Int,
         email: String,
@@ -26,7 +26,7 @@ class User private constructor(
         private set(value) {
             field = value
         }
-    var nickname: String = nickname
+    var nickname: String? = nickname
         private set(value) {
             field = value
         }
@@ -75,10 +75,10 @@ class User private constructor(
     }
 
     companion object {
-        fun newUser(username: String, nickname: String = "", description: String, imageCode: Int, email: String, password: String): User {
+        fun newUser(username: String, nickname: String? = null, description: String, imageCode: Int, email: String, password: String): User {
             return User(username, nickname, description, imageCode, email, password).apply {
-                this.createdBy = nickname
-                this.updatedBy = nickname
+                this.createdBy = username
+                this.updatedBy = username
             }
         }
     }
