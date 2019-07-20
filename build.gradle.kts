@@ -64,6 +64,10 @@ project(":manitto") {
         implementation("org.springframework.boot:spring-boot-starter-mail")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("com.querydsl:querydsl-jpa:${extra["querydslVersion"]}")
+        // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
+        implementation("io.springfox:springfox-swagger2:2.9.2")
+        implementation("io.springfox:springfox-swagger-ui:2.9.2")
+        
         kapt("com.querydsl:querydsl-apt:${extra["querydslVersion"]}:jpa")
         kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
 
@@ -80,6 +84,8 @@ project(":apigw") {
         implementation("org.springframework.cloud:spring-cloud-starter-netflix-zuul")
         implementation("org.springframework.cloud:spring-cloud-starter-netflix-ribbon")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+
     }
 
     configure<DependencyManagementExtension> {
