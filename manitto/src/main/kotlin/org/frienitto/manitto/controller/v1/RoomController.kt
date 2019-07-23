@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 import kotlin.streams.toList
 
+/**
+ * 인증이 필요한 모든 Api에는 Controller에 Parameter로 @RequestHeader(name = "X-Authorization") token: String 가 필수 입니다. (파라미터명과 타입이 분명해야함 (token: String))
+ */
 @RestController
 @RequestMapping("/api/v1")
 class RoomController(
