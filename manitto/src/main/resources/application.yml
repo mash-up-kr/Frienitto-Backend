@@ -34,7 +34,7 @@ spring:
     show-sql: true
 logging:
   level:
-    root: debug
+    root: info
 ---
 
 spring:

@@ -40,7 +40,7 @@ subprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
+            freeCompilerArgs = listOf("-Xjsr305=strict", "-parameters")
             jvmTarget = "1.8"
         }
     }
@@ -62,6 +62,7 @@ project(":manitto") {
         implementation("org.springframework.boot:spring-boot-starter-jdbc")
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-mail")
+        implementation("org.springframework.boot:spring-boot-starter-aop")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("com.querydsl:querydsl-jpa:${extra["querydslVersion"]}")
         kapt("com.querydsl:querydsl-apt:${extra["querydslVersion"]}:jpa")

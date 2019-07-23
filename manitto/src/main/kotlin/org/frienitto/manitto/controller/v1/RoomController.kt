@@ -1,4 +1,4 @@
-package org.frienitto.manitto.controller
+package org.frienitto.manitto.controller.v1
 
 import org.frienitto.manitto.dto.Response
 import org.frienitto.manitto.dto.RoomDto
@@ -33,13 +33,13 @@ class RoomController(
     }
 
     @GetMapping("/room/{id}")
-    fun getRoomDetail(@PathVariable("id") roomId: Long): Response<RoomDto> {
+    fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
         return roomService.getRoomDetailById(roomId)
     }
 
     //TODO 페이징 처리 해야함
     @GetMapping("/room/list")
-    fun getRoomList(): Response<List<RoomDto>> {
+    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
         return Response(
                 HttpStatus.OK.value(),
                 HttpStatus.OK.reasonPhrase,
