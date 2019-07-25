@@ -1,4 +1,4 @@
-package org.frienitto.manitto.controller
+package org.frienitto.manitto.controller.auth
 
 import io.swagger.annotations.*
 import org.frienitto.manitto.dto.*

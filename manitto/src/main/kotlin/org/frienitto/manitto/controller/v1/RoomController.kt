@@ -1,4 +1,4 @@
-package org.frienitto.manitto.controller
+package org.frienitto.manitto.controller.v1
 
 import io.swagger.annotations.*
 import org.frienitto.manitto.dto.Response
@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 import kotlin.streams.toList
 
+/**
+ * 인증이 필요한 모든 Api에는 Controller에 Parameter로 @RequestHeader(name = "X-Authorization") token: String 가 필수 입니다. (파라미터명과 타입이 분명해야함 (token: String))
+ */
 @RestController
 @RequestMapping("/api/v1")
 @Api(value = "마니또 방 관련 Controller", description = "방 생성 & 입장 & 조회 API")
@@ -47,7 +50,7 @@ class RoomController(
     @ApiOperation(value = "방 리스트 가져오기",response = Response::class)
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successfully get room list")])
     @GetMapping("/room/list")
-    fun getRoomList(): Response<List<RoomDto>> {
+    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
         return Response(
                 HttpStatus.OK.value(),
                 HttpStatus.OK.reasonPhrase,
