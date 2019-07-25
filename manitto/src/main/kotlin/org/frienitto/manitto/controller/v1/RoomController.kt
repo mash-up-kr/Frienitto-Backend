@@ -43,7 +43,7 @@ class RoomController(
     @ApiOperation(value = "자세한 방 정보 가져오기", response = Response::class)
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successfully get detailed room info")])
     @GetMapping("/room/{id}")
-    fun getRoomDetail(@ApiParam(value = "Room Id") @RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
+    fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
         return roomService.getRoomDetailById(roomId)
     }
 
