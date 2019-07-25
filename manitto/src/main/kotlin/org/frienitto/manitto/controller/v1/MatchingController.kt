@@ -1,4 +1,4 @@
-package org.frienitto.manitto.controller
+package org.frienitto.manitto.controller.v1
 
 import org.frienitto.manitto.dto.MatchRequest
 import org.frienitto.manitto.dto.MatchResultDto
@@ -9,17 +9,20 @@ import org.frienitto.manitto.service.UserRoomMapService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
+/**
+ * 인증이 필요한 모든 Api에는 Controller에 Parameter로 @RequestHeader(name = "X-Authorization") token: String 가 필수 입니다. (파라미터명과 타입이 분명해야함 (token: String))
+ */
 @RestController
 @RequestMapping("/api/v1")
 class MatchingController(private val userRoomMapService: UserRoomMapService, private val missionService: MissionService) {
 
     @PostMapping("/matching")
-    fun match(@RequestBody body: MatchRequest): Response<MatchResultDto> {
+    fun match(@RequestHeader(name = "X-Authorization") token: String, @RequestBody body: MatchRequest): Response<MatchResultDto> {
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.match(body))
     }
 
     @GetMapping("/matching-info/room/{id}")
-    fun getUserMatchingInfo(@PathVariable(name = "id") roomId: Long): Response<List<MissionDto>> {
+    fun getUserMatchingInfo(@RequestHeader(name = "X-Authorization") token: String, @PathVariable(name = "id") roomId: Long): Response<List<MissionDto>> {
         val result = missionService.getUserMissionsByRoomId(roomId)
                 .asSequence()
                 .map { MissionDto.from(it) }
