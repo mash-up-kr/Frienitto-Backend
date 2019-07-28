@@ -64,6 +64,8 @@ project(":manitto") {
         implementation("org.springframework.boot:spring-boot-starter-mail")
         implementation("org.springframework.boot:spring-boot-starter-aop")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("io.springfox:springfox-swagger2:2.9.2")
+        implementation("io.springfox:springfox-swagger-ui:2.9.2")
         implementation("com.querydsl:querydsl-jpa:${extra["querydslVersion"]}")
         kapt("com.querydsl:querydsl-apt:${extra["querydslVersion"]}:jpa")
         kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")

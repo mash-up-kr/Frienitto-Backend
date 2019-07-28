@@ -10,8 +10,20 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/api/v1"])
-@Api(value = "userController", description = "마니또 가입 및 로그인 API")
-class UserController(private val authService: AuthService, private val userService: UserService) {
+@Api(value = "authController", description = "마니또 가입 및 로그인 API & 인증 API")
+class AuthController(private val authService: AuthService, private val userService: UserService) {
+
+    @PostMapping(value = ["/issue/code"])
+    fun issueCode(@RequestBody body: IssueCodeRequest): Response<Unit> {
+        authService.sendAuthCodeToEmail(body.receiverInfo)
+        return Response(HttpStatus.ACCEPTED.value(), HttpStatus.ACCEPTED.reasonPhrase)
+    }
+
+    @PostMapping(value = ["/verify/code"])
+    fun verifyCode(@RequestBody body: VerifyCodeRequest): Response<RegisterToken> {
+        val registerToken = authService.verifyCode(body.code)
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, RegisterToken(registerToken))
+    }
 
     @ApiOperation(value = "회원가입", response = Response::class)
     @ApiResponses(value = [ApiResponse(code = 201, message = "Successfully Sign-up")])
