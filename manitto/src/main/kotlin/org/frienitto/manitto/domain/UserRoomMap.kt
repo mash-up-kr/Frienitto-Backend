@@ -53,6 +53,19 @@ class UserRoomMap private constructor(
         this.updatedAt = LocalDateTime.now()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UserRoomMap) return false
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+
     companion object{
         fun newUserRoomMap(room: Room, user: User): UserRoomMap {
             return UserRoomMap(room ,user, user.username, user.imageCode)

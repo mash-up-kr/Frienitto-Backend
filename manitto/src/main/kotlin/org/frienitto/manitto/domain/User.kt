@@ -75,11 +75,29 @@ class User private constructor(
     }
 
     companion object {
+
         fun newUser(username: String, nickname: String? = null, description: String, imageCode: Int, email: String, password: String): User {
             return User(username, nickname, description, imageCode, email, password).apply {
                 this.createdBy = username
                 this.updatedBy = username
             }
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is User) return false
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+
+    override fun toString(): String {
+        return "User(id=$id, username='$username', nickname=$nickname, description='$description', imageCode=$imageCode, email='$email', password='$password', salt='$salt', token='$token', tokenExpiresDate=$tokenExpiresDate, createdAt=$createdAt, createdBy=$createdBy, updatedAt=$updatedAt, updatedBy=$updatedBy)"
     }
 }
