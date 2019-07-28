@@ -1,8 +1,9 @@
 package org.frienitto.manitto.dto
 
+import io.swagger.annotations.Api
 import org.frienitto.manitto.util.generateToken
 import java.time.LocalDate
-
+@Api(value="접근 토큰", description = "API에 접근하기 위한 토큰")
 data class AccessToken(val token: String, val tokenExpiresDate: LocalDate) {
 
     companion object {
