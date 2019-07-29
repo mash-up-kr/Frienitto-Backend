@@ -5,6 +5,8 @@ import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,10 +22,9 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
         return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, RoomDto.from(room))
     }
 
-    //TODO 페이징 처리 해야함
     @Transactional(readOnly = true)
-    fun getRoomList(): List<Room> {
-        return roomRepository.findAll()
+    fun getRoomList(): Page<Room> {
+        return roomRepository.findAll(PageRequest.of(0, 10))
     }
 
     @Transactional(readOnly = true)
