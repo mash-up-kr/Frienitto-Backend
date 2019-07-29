@@ -1,6 +1,7 @@
 package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Mission
+import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.domain.UserRoomMap
 import org.frienitto.manitto.domain.constant.MissionStatus
@@ -33,10 +34,7 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     fun joinRoomByTitle(user: User, request: RoomJoinRequest): RoomDto {
         val room = roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException()
 
-        if (room.code != request.code) {
-            throw NonAuthorizationException()
-        }
-
+        validationRoom(room, user, request.code)
         userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
 
         return RoomDto.from(room)
@@ -46,13 +44,20 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     fun joinRoomById(user: User, roomId: Long, code: String): RoomDto {
         val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
 
-        if (room.code != code) {
-            throw NonAuthorizationException()
-        }
-
+        validationRoom(room, user, code)
         userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
 
         return RoomDto.from(room)
+    }
+
+    private fun validationRoom(room: Room, user: User, code: String) {
+        val participantsByRoomId = room.id?.let { this.getParticipantsByRoomId(it) }
+        participantsByRoomId?.any { a -> a.id == user.id }
+                ?: throw NonAuthorizationException(errorCode = 408, errorMsg = "이미 입장된 방입니다.")
+
+        if (room.code != code) {
+            throw NonAuthorizationException()
+        }
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +68,9 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
 
     @Transactional
     fun match(matchRequest: MatchRequest): MatchResultDto {
-        val room = roomRepository.findById(matchRequest.roomId).orElseThrow { ResourceNotFoundException() }
+        val room = roomRepository
+                .findById(matchRequest.roomId)
+                .orElseThrow { ResourceNotFoundException() }
         room.matched()
         roomRepository.save(room)
 
@@ -81,13 +88,13 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     }
 
     private fun matchUser(matchRequest: MatchRequest): List<Mission> {
+        val missions = mutableListOf<Mission>()
         val participants = getParticipantsByRoomId(matchRequest.roomId)
                 .asSequence()
                 .map { it.id }
                 .toList()
                 .shuffled()
                 .toLongArray()
-        val missions = mutableListOf<Mission>()
 
         for (index in 0 until participants.size) {
             if (index == participants.size - 1) {
