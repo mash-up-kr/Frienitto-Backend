@@ -8,6 +8,7 @@ import org.frienitto.manitto.dto.RoomRequest
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserRoomMapService
 import org.frienitto.manitto.service.UserService
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -47,15 +48,16 @@ class RoomController(
         return roomService.getRoomDetailById(roomId)
     }
 
-    //TODO 페이징 처리 해야함
     @ApiOperation(value = "방 리스트 가져오기", response = Response::class)
     @ApiResponses(value = [ApiResponse(code = 200, message = "Successfully get room list")])
     @GetMapping("/room/list")
-    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
+    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String,
+                    @RequestParam("page") page: Int,
+                    @RequestParam("size") size: Int): Response<List<RoomDto>> {
         return Response(
                 HttpStatus.OK.value(),
                 HttpStatus.OK.reasonPhrase,
-                roomService.getRoomList()
+                roomService.getRoomList(PageRequest.of(page, size))
                         .stream()
                         .map { RoomDto.from(it) }
                         .toList()

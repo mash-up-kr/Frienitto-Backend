@@ -23,8 +23,8 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
     }
 
     @Transactional(readOnly = true)
-    fun getRoomList(): Page<Room> {
-        return roomRepository.findAll(PageRequest.of(0, 10))
+    fun getRoomList(page:PageRequest): Page<Room> {
+        return roomRepository.findAll(page)
     }
 
     @Transactional(readOnly = true)
