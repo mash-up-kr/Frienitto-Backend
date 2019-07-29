@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(value = ["/api/v1"])
 @Api(value = "authController", description = "마니또 가입 및 로그인 API & 인증 API")
 class AuthController(private val authService: AuthService, private val userService: UserService) {
-
+    @ApiOperation(value = "Email 전송")
     @PostMapping(value = ["/issue/code"])
     fun issueCode(@RequestBody body: IssueCodeRequest): Response<Unit> {
         authService.sendAuthCodeToEmail(body.receiverInfo)
         return Response(HttpStatus.ACCEPTED.value(), HttpStatus.ACCEPTED.reasonPhrase)
     }
-
+    @ApiOperation(value = "Email 인증")
     @PostMapping(value = ["/verify/code"])
     fun verifyCode(@RequestBody body: VerifyCodeRequest): Response<RegisterToken> {
         val registerToken = authService.verifyCode(body.code)
