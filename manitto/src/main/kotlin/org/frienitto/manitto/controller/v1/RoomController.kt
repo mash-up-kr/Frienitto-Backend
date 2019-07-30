@@ -1,10 +1,10 @@
 package org.frienitto.manitto.controller.v1
 
 import io.swagger.annotations.*
-import org.frienitto.manitto.dto.Response
-import org.frienitto.manitto.dto.RoomDto
-import org.frienitto.manitto.dto.RoomJoinRequest
-import org.frienitto.manitto.dto.RoomRequest
+import org.frienitto.manitto.controller.swagger.model.RoomDetailInfo
+import org.frienitto.manitto.controller.swagger.model.RoomListInfo
+import org.frienitto.manitto.domain.QRoom.room
+import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserRoomMapService
 import org.frienitto.manitto.service.UserService
@@ -24,41 +24,39 @@ class RoomController(
         private val userService: UserService,
         private val userRoomMapService: UserRoomMapService
 ) {
-    @ApiOperation(value = "방 등록하기", response = Response::class)
-    @ApiResponses(value = [ApiResponse(code = 201, message = "Successfully register room")])
+    @ApiOperation(value = "방 등록하기", response = RoomDetailInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 201, message = "Created")])
     @PostMapping("/register/room")
-    fun createRoom(@RequestHeader("X-Authorization") token: String, @Valid @RequestBody request: RoomRequest): Response<RoomDto> {
+    fun createRoom(@RequestHeader("X-Authorization") token: String, @Valid @RequestBody createRequest: RoomCreateRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
-        return roomService.createRoom(user, request)
+
+        return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, roomService.createRoom(user, createRequest))
     }
 
-    @ApiOperation(value = "방 입장하기", response = Response::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Successfully Join room")])
+    @ApiOperation(value = "방 입장하기", response = RoomDetailInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
     @PostMapping("/join/room")
     fun joinRoom(@RequestHeader("X-Authorization") token: String, @RequestBody request: RoomJoinRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.joinRoomByTitle(user, request))
     }
 
-    @ApiOperation(value = "자세한 방 정보 가져오기", response = Response::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Successfully get detailed room info")])
+    @ApiOperation(value = "자세한 방 정보 가져오기", response = RoomDetailInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
     @GetMapping("/room/{id}")
     fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
-        return roomService.getRoomDetailById(roomId)
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomDetailById(RoomRetrieveRequest(token, roomId)))
     }
 
     //TODO 페이징 처리 해야함
-    @ApiOperation(value = "방 리스트 가져오기", response = Response::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "Successfully get room list")])
+    @ApiOperation(value = "방 리스트 가져오기", response = RoomListInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
     @GetMapping("/room/list")
     fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
-        return Response(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.reasonPhrase,
-                roomService.getRoomList()
-                        .stream()
-                        .map { RoomDto.from(it) }
-                        .toList()
-        )
+        val result = roomService.getRoomList().stream()
+                .map { RoomDto.from(it) }
+                .toList()
+
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
 }

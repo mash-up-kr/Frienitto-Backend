@@ -1,5 +1,7 @@
 package org.frienitto.manitto.dto
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.frienitto.manitto.domain.Mission
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
@@ -9,18 +11,21 @@ import org.frienitto.manitto.domain.constant.RoomStatus
 import java.time.LocalDate
 import javax.validation.constraints.NotBlank
 
-data class RoomDto(val id: Long, @get: NotBlank val title: String, val status: RoomStatus, val expiresDate: LocalDate, val participants: List<ParticipantDto>?) {
+data class RoomDto(
+        val id: Long,
+        @get: NotBlank
+        val title: String,
+        val status: RoomStatus,
+        @get: JsonProperty("is_owner")
+        val isOwner: Boolean?,
+        val expiresDate: LocalDate,
+        val participants: List<ParticipantDto>?) {
 
     companion object {
 
         @JvmStatic
-        fun from(room: Room, participants: List<ParticipantDto>?): RoomDto {
-            return RoomDto(room.id!!, room.title, room.status, room.expiresDate, participants)
-        }
-
-        @JvmStatic
-        fun from(room: Room): RoomDto {
-            return from(room, null)
+        fun from(room: Room, isOwner: Boolean? = null, participants: List<ParticipantDto>? = null): RoomDto {
+            return RoomDto(room.id!!, room.title, room.status, isOwner, room.expiresDate, participants)
         }
     }
 }

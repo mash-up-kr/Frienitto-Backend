@@ -2,22 +2,25 @@ package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
-import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.dto.RoomCreateRequest
+import org.frienitto.manitto.dto.RoomDto
+import org.frienitto.manitto.dto.RoomRetrieveRequest
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class RoomService(private val roomRepository: RoomRepository, private val userRoomMapService: UserRoomMapService) {
+class RoomService(private val roomRepository: RoomRepository,
+                  private val userRoomMapService: UserRoomMapService,
+                  private val userService: UserService) {
 
     @Transactional
-    fun createRoom(owner: User, request: RoomRequest): Response<RoomDto> {
-        val room = roomRepository.save(Room.newRoom(owner, request.title, request.code, request.expiresDate))
+    fun createRoom(owner: User, createRequest: RoomCreateRequest): RoomDto {
+        val room = roomRepository.save(Room.newRoom(owner, createRequest.title, createRequest.code, createRequest.expiresDate))
         userRoomMapService.joinRoomById(owner, room.id!!, room.code)
 
-        return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, RoomDto.from(room))
+        return RoomDto.from(room)
     }
 
     //TODO 페이징 처리 해야함
@@ -27,10 +30,11 @@ class RoomService(private val roomRepository: RoomRepository, private val userRo
     }
 
     @Transactional(readOnly = true)
-    fun getRoomDetailById(roomId: Long): Response<RoomDto>{
-        val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
-        val participants = userRoomMapService.getParticipantsByRoomId(roomId)
+    fun getRoomDetailById(retrieveRequest: RoomRetrieveRequest): RoomDto {
+        val room = roomRepository.findById(retrieveRequest.roomId).orElseThrow { ResourceNotFoundException() }
+        val participants = userRoomMapService.getParticipantsByRoomId(retrieveRequest.roomId)
+        val requestUser = userService.getUserByToken(retrieveRequest.userToken)
 
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, RoomDto.from(room, participants))
+        return RoomDto.from(room = room, isOwner = room.validateOwner(requestUser), participants = participants)
     }
 }
