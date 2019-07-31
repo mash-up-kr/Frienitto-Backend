@@ -11,7 +11,7 @@ data class IssueCodeRequest(val receiverInfo: String, val type: String)
 
 data class VerifyCodeRequest(val receiverInfo: String, val type: String, val code: String)
 
-data class RoomRequest(
+data class RoomCreateRequest(
         @get:NotBlank
         val title: String,
         @get:NotBlank
@@ -19,6 +19,8 @@ data class RoomRequest(
         @get:Future
         val expiresDate: LocalDate
 )
+
+data class RoomRetrieveRequest(val userToken: String, val roomId: Long)
 
 data class RoomJoinRequest(val title: String, val code: String)
 

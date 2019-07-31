@@ -11,6 +11,11 @@ spring:
     properties.mail.smtp.auth: true
     properties.mail.smtp.starttls.enable: true
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+
 ---
 
 spring:

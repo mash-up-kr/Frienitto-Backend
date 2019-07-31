@@ -81,4 +81,21 @@ class Room private constructor(
     fun expired() {
         this.status = RoomStatus.EXPIRED
     }
+
+    fun validateOwner(user: User): Boolean {
+        return this.owner == user
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Room) return false
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
 }
