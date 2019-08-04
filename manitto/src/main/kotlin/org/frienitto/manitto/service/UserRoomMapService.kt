@@ -1,11 +1,13 @@
 package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Mission
+import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.domain.UserRoomMap
 import org.frienitto.manitto.domain.constant.MissionStatus
 import org.frienitto.manitto.domain.constant.MissionType
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.InvalidStatusException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.NotSupportException
 import org.frienitto.manitto.exception.ResourceNotFoundException
@@ -32,11 +34,7 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     @Transactional
     fun joinRoomByTitle(user: User, request: RoomJoinRequest): RoomDto {
         val room = roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException()
-
-        if (room.code != request.code) {
-            throw NonAuthorizationException()
-        }
-
+        validateJoinable(room, request.code)
         userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
 
         return RoomDto.from(room)
@@ -45,11 +43,7 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     @Transactional
     fun joinRoomById(user: User, roomId: Long, code: String): RoomDto {
         val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
-
-        if (room.code != code) {
-            throw NonAuthorizationException()
-        }
-
+        validateJoinable(room, code)
         userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
 
         return RoomDto.from(room)
@@ -77,6 +71,16 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
             )
         } else {
             throw NotSupportException()
+        }
+    }
+
+    private fun validateJoinable(room: Room, code: String) {
+        if (!room.isMatchingCode(code)) {
+            throw NonAuthorizationException()
+        }
+
+        if (!room.isJoinableStatus()) {
+            throw InvalidStatusException()
         }
     }
 
