@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1")
 @Api(value = "마니또 매칭 Controller", description = "매칭이 완료된 방의 매칭 상세 정보 API")
-class MatchingController(private val userRoomMapService: UserRoomMapService, private val missionService: MissionService) {
+class MatchingController(private val missionService: MissionService) {
 
     @ApiOperation(value = "매칭 시작 API", response = MatchResultInfo::class)
     @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
     @PostMapping("/matching")
     fun match(@RequestHeader(name = "X-Authorization") token: String, @RequestBody body: MatchRequest): Response<MatchResultDto> {
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.match(body))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, missionService.match(body))
     }
 
     @ApiOperation(value = "매칭 정보 가져오는 API", response = MatchListInfo::class)

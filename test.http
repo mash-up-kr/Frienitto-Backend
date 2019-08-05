@@ -84,3 +84,14 @@ X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
   "owner_id": 1,
   "type": "USER"
 }
+
+### 방 퇴장
+DELETE http://localhost:8080/api/v1/exit/room
+Content-Type: application/json
+X-Authorization: F395BF3DF03AB3E4718BC6D08914DA7B
+
+{
+  "title": "테스트방1"
+}
+
+###

@@ -24,6 +24,8 @@ data class RoomRetrieveRequest(val userToken: String, val roomId: Long)
 
 data class RoomJoinRequest(val title: String, val code: String)
 
+data class RoomExitRequest(val title: String)
+
 data class SignUpDto(val username: String, val description: String, val imageCode: Int, val email: String, val password: String)
 
 data class SignInDto(val email: String, val password: String)

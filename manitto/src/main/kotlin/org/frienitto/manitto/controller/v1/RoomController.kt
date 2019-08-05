@@ -3,12 +3,12 @@ package org.frienitto.manitto.controller.v1
 import io.swagger.annotations.*
 import org.frienitto.manitto.controller.swagger.model.RoomDetailInfo
 import org.frienitto.manitto.controller.swagger.model.RoomListInfo
-import org.frienitto.manitto.domain.QRoom.room
 import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserRoomMapService
 import org.frienitto.manitto.service.UserService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 import kotlin.streams.toList
@@ -21,8 +21,7 @@ import kotlin.streams.toList
 @Api(value = "마니또 방 관련 Controller", description = "방 생성 & 입장 & 조회 API")
 class RoomController(
         private val roomService: RoomService,
-        private val userService: UserService,
-        private val userRoomMapService: UserRoomMapService
+        private val userService: UserService
 ) {
     @ApiOperation(value = "방 등록하기", response = RoomDetailInfo::class)
     @ApiResponses(value = [ApiResponse(code = 201, message = "Created")])
@@ -38,14 +37,23 @@ class RoomController(
     @PostMapping("/join/room")
     fun joinRoom(@RequestHeader("X-Authorization") token: String, @RequestBody request: RoomJoinRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, userRoomMapService.joinRoomByTitle(user, request))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.joinRoomByTitle(user, request))
     }
 
     @ApiOperation(value = "자세한 방 정보 가져오기", response = RoomDetailInfo::class)
     @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
     @GetMapping("/room/{id}")
     fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomDetailById(RoomRetrieveRequest(token, roomId)))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomInfoWithValidateOwner(RoomRetrieveRequest(token, roomId)))
+    }
+
+    @DeleteMapping("/exit/room")
+    fun exitRoom(@RequestHeader(name = "X-Authorization") token: String, @RequestBody request: RoomExitRequest): ResponseEntity<Response<Unit>> {
+        val user = userService.getUserByToken(token)
+        roomService.deleteRoom(user, request.title)
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(Response(HttpStatus.ACCEPTED.value(), HttpStatus.ACCEPTED.reasonPhrase))
     }
 
     //TODO 페이징 처리 해야함
