@@ -59,15 +59,15 @@ data class UserDto(
     }
 }
 
-data class ParticipantDto(val id: Long, val username: String, val imageCode: Int) {
+data class ParticipantDto(val id: Long, val username: String, val imageCode: Int, val description: String) {
 
     companion object {
         fun from(user: User): ParticipantDto {
-            return ParticipantDto(user.id!!, user.username, user.imageCode)
+            return ParticipantDto(user.id!!, user.username, user.imageCode, user.description)
         }
 
-        fun of(id: Long, username: String, imageCode: Int): ParticipantDto {
-            return ParticipantDto(id, username, imageCode)
+        fun of(id: Long, username: String, imageCode: Int, description: String): ParticipantDto {
+            return ParticipantDto(id, username, imageCode, description)
         }
     }
 }

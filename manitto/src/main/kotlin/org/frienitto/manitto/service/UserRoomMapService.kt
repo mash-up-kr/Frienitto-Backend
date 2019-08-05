@@ -16,7 +16,7 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     @Transactional(readOnly = true)
     fun getParticipantsByRoomId(roomId: Long): List<ParticipantDto> {
         return getByRoomIdWithAll(roomId).stream()
-                .map { ParticipantDto.of(it.user.id!!, it.username, it.imageCode) }
+                .map { ParticipantDto.of(it.user.id!!, it.user.username, it.user.imageCode, it.user.description) }
                 .toList()
     }
 
