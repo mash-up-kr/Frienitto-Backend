@@ -15,7 +15,7 @@ class EmailServiceTest : SpringTestSupport() {
     @Autowired
     lateinit var emailService: EmailService
 
-    @Test
+//    @Test
     fun `이메일 전송 테스트`() {
         emailService.send(TITLE, MSG, TO)
     }

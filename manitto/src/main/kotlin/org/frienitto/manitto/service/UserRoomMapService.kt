@@ -1,5 +1,6 @@
 package org.frienitto.manitto.service
 
+
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.domain.UserRoomMap
@@ -30,6 +31,7 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
     fun connect(user: User, room: Room): UserRoomMap {
         return userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
     }
+
 
     @Transactional
     fun disconnect(userId: Long, roomId: Long) {

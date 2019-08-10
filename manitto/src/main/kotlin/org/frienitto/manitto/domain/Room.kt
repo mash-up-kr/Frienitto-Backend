@@ -82,6 +82,14 @@ class Room private constructor(
         this.status = RoomStatus.EXPIRED
     }
 
+    fun isMatchingCode(code: String): Boolean {
+        return this.code == code
+    }
+
+    fun isJoinableStatus(): Boolean {
+        return this.status == RoomStatus.CREATED
+    }
+
     fun validateOwner(user: User): Boolean {
         return this.owner == user
     }

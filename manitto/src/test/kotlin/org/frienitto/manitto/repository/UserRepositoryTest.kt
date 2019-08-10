@@ -24,11 +24,6 @@ class UserRepositoryTest : SpringTestSupport() {
         userRepository.save(mockUser(username = USERNAME, nickname = NICKNAME, email = EMAIL, password = PASSWORD))
     }
 
-    @AfterEach
-    fun tearDown() {
-        userRepository.deleteAll()
-    }
-
     @Test
     fun `유저 닉네임 조회`() {
         val result = userRepository.findByNickname(NICKNAME) ?: mockUser(USERNAME, "FAIL", "FAIL", "FAIL", PASSWORD)

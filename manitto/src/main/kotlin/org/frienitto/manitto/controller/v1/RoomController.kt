@@ -4,6 +4,7 @@ import io.swagger.annotations.*
 import org.frienitto.manitto.controller.swagger.model.RoomDetailInfo
 import org.frienitto.manitto.controller.swagger.model.RoomListInfo
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserRoomMapService
 import org.frienitto.manitto.service.UserService
@@ -32,8 +33,10 @@ class RoomController(
         return Response(HttpStatus.CREATED.value(), HttpStatus.CREATED.reasonPhrase, roomService.createRoom(user, createRequest))
     }
 
-    @ApiOperation(value = "방 입장하기", response = RoomDetailInfo::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
+    @ApiOperation(value = "방 입장하기")
+    @ApiResponses(value = [
+        ApiResponse(code = 200, message = "OK", response = RoomDetailInfo::class),
+        ApiResponse(code = 409, message = "입장 가능한 상태가 아닙니다.", response = ErrorInfo::class)])
     @PostMapping("/join/room")
     fun joinRoom(@RequestHeader("X-Authorization") token: String, @RequestBody request: RoomJoinRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
