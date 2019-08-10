@@ -2,10 +2,7 @@ package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
-import org.frienitto.manitto.dto.RoomCreateRequest
-import org.frienitto.manitto.dto.RoomDto
-import org.frienitto.manitto.dto.RoomJoinRequest
-import org.frienitto.manitto.dto.RoomRetrieveRequest
+import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
@@ -87,5 +84,16 @@ class RoomService(private val roomRepository: RoomRepository,
     @Transactional
     fun save(room: Room): Room {
         return roomRepository.save(room)
+    }
+
+    @Transactional(readOnly = true)
+    fun getRoomByTitle(request: RoomRetrieveByTitleRequest): Room {
+        return roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException(errorMsg = "방 없음")
+    }
+
+    @Transactional(readOnly = true)
+    fun getJoiningRoomListByUser(request: String): List<RoomDto> {
+        val id = userService.getUserByToken(request).id ?: throw ResourceNotFoundException(errorMsg = "해당 유저 없음")
+        return userRoomMapService.getByUserIdWithAll(id)
     }
 }

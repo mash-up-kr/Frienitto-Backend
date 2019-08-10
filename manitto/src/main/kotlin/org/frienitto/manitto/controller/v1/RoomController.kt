@@ -3,6 +3,7 @@ package org.frienitto.manitto.controller.v1
 import io.swagger.annotations.*
 import org.frienitto.manitto.controller.swagger.model.RoomDetailInfo
 import org.frienitto.manitto.controller.swagger.model.RoomListInfo
+import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.RoomService
@@ -70,4 +71,26 @@ class RoomController(
 
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
+
+    @ApiOperation(value = "방 제목으로 해당 방 정보 가져오기", response = RoomDetailInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 200, message = "OK"), ApiResponse(code = 404, message = "NOT FOUND")])
+    @GetMapping("/room/title/{title}")
+    fun getRoomByTitle(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("title") title: String): Response<RoomDto> {
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, RoomDto.from(roomService.getRoomByTitle(RoomRetrieveByTitleRequest(token, title))))
+    }
+
+    @ApiOperation(value = "해당 유저가 참여하고 있는 룸 리스트 가져오기", response = RoomListInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 200, message = "OK"), ApiResponse(code = 404, message = "NOT FOUND")])
+    @GetMapping("/user/room/list")
+    fun getJoiningRoomListByUser(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
+        val result = roomService.getJoiningRoomListByUser(token)
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
+    }
 }
+
+//@ApiOperation(value = "자세한 방 정보 가져오기", response = RoomDetailInfo::class)
+//@ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
+//@GetMapping("/room/{id}")
+//fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
+//    return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomInfoWithValidateOwner(RoomRetrieveRequest(token, roomId)))
+//}

@@ -5,6 +5,7 @@ import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.domain.UserRoomMap
 import org.frienitto.manitto.dto.ParticipantDto
+import org.frienitto.manitto.dto.RoomDto
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.UserRoomMapRepository
 import org.springframework.stereotype.Service
@@ -27,11 +28,18 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
         return if (maps.isEmpty()) throw ResourceNotFoundException() else maps
     }
 
+    @Transactional(readOnly = true)
+    fun getByUserIdWithAll(userId: Long): List<RoomDto> {
+        val rooms = userRoomMapRepository.findByUserIdWithAllRelationship(userId).stream()
+                .map { RoomDto.from(it.room) }
+                .toList()
+        return if (rooms.isEmpty()) throw ResourceNotFoundException() else rooms
+    }
+
     @Transactional
     fun connect(user: User, room: Room): UserRoomMap {
         return userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))
     }
-
 
     @Transactional
     fun disconnect(userId: Long, roomId: Long) {

@@ -35,7 +35,7 @@ class UserRoomMap private constructor(
             field = value
         }
     var imageCode: Int = imageCode
-        private set(value){
+        private set(value) {
             field = value
         }
     lateinit var createdAt: LocalDateTime
@@ -66,9 +66,9 @@ class UserRoomMap private constructor(
         return id?.hashCode() ?: 0
     }
 
-    companion object{
+    companion object {
         fun newUserRoomMap(room: Room, user: User): UserRoomMap {
-            return UserRoomMap(room ,user, user.username, user.imageCode)
+            return UserRoomMap(room, user, user.username, user.imageCode)
         }
     }
 }
