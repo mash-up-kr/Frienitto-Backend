@@ -24,4 +24,10 @@ class UserRoomMapRepositoryImpl : UserRoomMapCustomRepository, QuerydslBaseSuppo
 
         return query.fetch()
     }
+
+    override fun deleteByRoomId(roomId: Long): Long {
+        return delete(qUserRoomMap)
+                .where(qUserRoomMap.room.id.eq(roomId))
+                .execute()
+    }
 }
