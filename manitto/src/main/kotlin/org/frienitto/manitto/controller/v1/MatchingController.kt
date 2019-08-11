@@ -24,14 +24,16 @@ import org.springframework.web.bind.annotation.*
 class MatchingController(private val missionService: MissionService) {
 
     @ApiOperation(value = "매칭 시작 API", response = MatchResultInfo::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
+    @ApiResponses(value = [ApiResponse(code = 200, message = "OK"),
+        ApiResponse(code = 404, message = "NOT FOUND"),
+        ApiResponse(code = 5003, message = "해당 요청에서 미션 타입이 적절하지 않습니다.")])
     @PostMapping("/matching")
     fun match(@RequestHeader(name = "X-Authorization") token: String, @RequestBody body: MatchRequest): Response<MatchResultDto> {
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, missionService.match(body))
     }
 
-    @ApiOperation(value = "매칭 정보 가져오는 API", response = MatchListInfo::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "OK")])
+    @ApiOperation(value = "매칭된 방의 미션 정보 가져오는 API", response = MatchListInfo::class)
+    @ApiResponses(value = [ApiResponse(code = 200, message = "get missions from room")])
     @GetMapping("/matching-info/room/{id}")
     fun getUserMatchingInfo(@RequestHeader(name = "X-Authorization") token: String, @PathVariable(name = "id") roomId: Long): Response<List<MissionDto>> {
         val result = missionService.getUserMissionsByRoomId(roomId)

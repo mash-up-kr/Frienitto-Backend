@@ -1,6 +1,7 @@
 package org.frienitto.manitto.exception
 
 import org.springframework.http.HttpStatus
+import org.springframework.mail.MailException
 
 open class FrienittoException(val errorCode: Int, val errorMsg: String) : RuntimeException(errorMsg)
 
@@ -11,3 +12,5 @@ class InvalidStatusException(errorCode: Int = HttpStatus.CONFLICT.value(), error
 class ResourceNotFoundException(errorCode: Int = HttpStatus.NOT_FOUND.value(), errorMsg: String = HttpStatus.NOT_FOUND.reasonPhrase) : FrienittoException(errorCode, errorMsg)
 
 class NotSupportException(errorCode: Int = 5003, errorMsg: String = "Not support function now"): FrienittoException(errorCode, errorMsg)
+
+class MailException(errorCode: Int = 5004, errorMsg: String = "Mail Send Failed") : MailException("")
