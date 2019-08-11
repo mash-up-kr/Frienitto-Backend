@@ -27,7 +27,7 @@ class RoomService(private val roomRepository: RoomRepository,
 
     @Transactional
     fun deleteRoom(user: User, title: String) {
-        val room = roomRepository.findByTitle(title) ?: return
+        val room = roomRepository.findByTitle(title) ?: throw ResourceNotFoundException(errorMsg = "삭제 가능한 방이 없습니다.")
 
         if (room.validateOwner(user)) {
             userRoomMapService.disconnectAllByRoomId(room.id!!)
@@ -40,10 +40,10 @@ class RoomService(private val roomRepository: RoomRepository,
 
     @Transactional
     fun joinRoomByTitle(user: User, request: RoomJoinRequest): RoomDto {
-        val room = roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException()
+        val room = roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException(errorMsg = "요청한 방을 찾을 수 없습니다.")
 
         if (room.code != request.code) {
-            throw NonAuthorizationException()
+            throw NonAuthorizationException(errorCode = 405, errorMsg = "방 생성 코드가 맞지 않음")
         }
 
         userRoomMapService.connect(user, room)
@@ -53,10 +53,10 @@ class RoomService(private val roomRepository: RoomRepository,
 
     @Transactional
     fun joinRoomById(user: User, roomId: Long, code: String): RoomDto {
-        val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
+        val room = roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException(errorMsg = "요청 방을 찾을 수 없음") }
 
         if (room.code != code) {
-            throw NonAuthorizationException()
+            throw NonAuthorizationException(errorCode = 405, errorMsg = "방 생성 코드가 맞지 않음")
         }
 
         userRoomMapService.connect(user, room)
@@ -72,7 +72,7 @@ class RoomService(private val roomRepository: RoomRepository,
 
     @Transactional(readOnly = true)
     fun getRoomInfoWithValidateOwner(retrieveRequest: RoomRetrieveRequest): RoomDto {
-        val room = roomRepository.findById(retrieveRequest.roomId).orElseThrow { ResourceNotFoundException() }
+        val room = roomRepository.findById(retrieveRequest.roomId).orElseThrow { ResourceNotFoundException(errorMsg = "해당 요청하는 방을 찾을 수 없습니다.") }
         val participants = userRoomMapService.getParticipantsByRoomId(retrieveRequest.roomId)
         val requestUser = userService.getUserByToken(retrieveRequest.userToken)
 
@@ -81,7 +81,7 @@ class RoomService(private val roomRepository: RoomRepository,
 
     @Transactional(readOnly = true)
     fun getRoomById(roomId: Long): Room {
-        return roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException() }
+        return roomRepository.findById(roomId).orElseThrow { ResourceNotFoundException(errorMsg = "해당 요청하는 방을 찾을 수 없습니다.") }
     }
 
     @Transactional

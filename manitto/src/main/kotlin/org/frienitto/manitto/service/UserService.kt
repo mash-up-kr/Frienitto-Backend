@@ -16,21 +16,26 @@ class UserService(private val userRepository: UserRepository) {
 
     @Transactional(readOnly = true)
     fun getUserByToken(userToken: String): User {
-        return userRepository.findByToken(userToken) ?: throw NonAuthorizationException()
+        return userRepository.findByToken(userToken) ?: throw NonAuthorizationException(errorMsg = "인증되지 않은 사용자 입니다.")
     }
 
     @Transactional
     fun signUp(signUpDto: SignUpDto): UserDto {
-        val user = User.newUser(username = signUpDto.username, description = signUpDto.description, imageCode = signUpDto.imageCode, email = signUpDto.email, password = signUpDto.password)
+        val user = User.newUser(username = signUpDto.username,
+                description = signUpDto.description,
+                imageCode = signUpDto.imageCode,
+                email = signUpDto.email,
+                password = signUpDto.password)
+
         userRepository.save(user)
         return UserDto.from(user)
     }
 
     fun signIn(signInDto: SignInDto): AccessToken {
-        val user = userRepository.findByEmail(signInDto.email) ?: throw ResourceNotFoundException()
+        val user = userRepository.findByEmail(signInDto.email) ?: throw ResourceNotFoundException(errorMsg = "찾을 수 없는 사용자 입니다.")
 
         if (user.password != signInDto.password) {
-            throw NonAuthorizationException()
+            throw NonAuthorizationException(errorMsg = "찾을 수 없는 사용자 입니다.")
         }
         return AccessToken(user.token, user.tokenExpiresDate)
     }

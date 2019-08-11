@@ -41,6 +41,6 @@ class AuthService(private val emailService: EmailService, private val userReposi
     }
 
     fun verifyCode(code: String): String {
-        return authCodeMap[code] ?: throw NonAuthorizationException()
+        return authCodeMap[code] ?: throw NonAuthorizationException(errorMsg = "인증 코드가 맞지 않습니다.")
     }
 }

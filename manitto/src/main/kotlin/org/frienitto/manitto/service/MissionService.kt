@@ -24,19 +24,20 @@ class MissionService(private val missionRepository: MissionRepository,
     @Transactional
     fun match(matchRequest: MatchRequest): MatchResultDto {
         val room = roomService.getRoomById(matchRequest.roomId)
+
         room.matched()
-        roomService.save(room)
+        val matchedRoom = roomService.save(room)
 
         if (matchRequest.type.isUserMission()) {
             return MatchResultDto(
-                    room.id!!,
-                    room.status,
+                    matchedRoom.id!!,
+                    matchedRoom.status,
                     matchUser(matchRequest).asSequence()
                             .map { MissionDto.from(it) }
                             .toList()
             )
         } else {
-            throw NotSupportException()
+            throw NotSupportException(errorMsg = "해당 요청에서 미션 타입이 적절하지 않습니다.")
         }
     }
 
