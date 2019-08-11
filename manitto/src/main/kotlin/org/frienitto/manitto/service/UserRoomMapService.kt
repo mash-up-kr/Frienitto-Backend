@@ -30,10 +30,9 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
 
     @Transactional(readOnly = true)
     fun getByUserIdWithAll(userId: Long): List<RoomDto> {
-        val rooms = userRoomMapRepository.findByUserIdWithAllRelationship(userId).stream()
+        return  userRoomMapRepository.findByUserIdWithAllRelationship(userId).stream()
                 .map { RoomDto.from(it.room) }
                 .toList()
-        return if (rooms.isEmpty()) throw ResourceNotFoundException() else rooms
     }
 
     @Transactional

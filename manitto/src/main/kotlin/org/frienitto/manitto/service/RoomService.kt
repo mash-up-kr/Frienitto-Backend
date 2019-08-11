@@ -92,8 +92,8 @@ class RoomService(private val roomRepository: RoomRepository,
     }
 
     @Transactional(readOnly = true)
-    fun getJoiningRoomListByUser(request: String): List<RoomDto> {
-        val id = userService.getUserByToken(request).id ?: throw ResourceNotFoundException(errorMsg = "해당 유저 없음")
+    fun getJoiningRoomListByUser(user: User): List<RoomDto> {
+        val id = user.id ?: throw ResourceNotFoundException(errorMsg = "해당 유저 없음")
         return userRoomMapService.getByUserIdWithAll(id)
     }
 }

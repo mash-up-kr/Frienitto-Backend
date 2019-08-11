@@ -83,7 +83,8 @@ class RoomController(
     @ApiResponses(value = [ApiResponse(code = 200, message = "OK"), ApiResponse(code = 404, message = "NOT FOUND")])
     @GetMapping("/user/room/list")
     fun getJoiningRoomListByUser(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
-        val result = roomService.getJoiningRoomListByUser(token)
+        val user = userService.getUserByToken(token)
+        val result = roomService.getJoiningRoomListByUser(user)
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
 }
