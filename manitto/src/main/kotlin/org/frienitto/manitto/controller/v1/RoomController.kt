@@ -93,8 +93,6 @@ class RoomController(
                     RoomDto.from(it, it.validateOwner(requestUser), participants) }
                 .toList()
 
-        userRoomMapService
-
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
 }
