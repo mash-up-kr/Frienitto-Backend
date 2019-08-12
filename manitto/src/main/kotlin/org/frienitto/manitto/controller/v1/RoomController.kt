@@ -4,6 +4,8 @@ import io.swagger.annotations.*
 import org.frienitto.manitto.controller.swagger.model.RoomDetailInfo
 import org.frienitto.manitto.controller.swagger.model.RoomListInfo
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.NotSupportException
+import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserRoomMapService
@@ -22,7 +24,8 @@ import kotlin.streams.toList
 @Api(value = "마니또 방 관련 Controller", description = "방 생성 & 입장 & 조회 API")
 class RoomController(
         private val roomService: RoomService,
-        private val userService: UserService
+        private val userService: UserService,
+        private val userRoomMapService: UserRoomMapService
 ) {
     @ApiOperation(value = "방 등록하기", response = RoomDetailInfo::class)
     @ApiResponses(value = [ApiResponse(code = 201, message = "방 등록 완료", response = ErrorInfo::class),
@@ -81,9 +84,16 @@ class RoomController(
     @GetMapping("/room/list")
     fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
         userService.getUserByToken(token)
-        val result = roomService.getRoomList().stream()
-                .map { RoomDto.from(it) }
+        val result = roomService.getRoomList()
+                .stream()
+                .map {
+                    val participants = userRoomMapService.getParticipantsByRoomId(it.id
+                            ?: throw ResourceNotFoundException())
+                    val requestUser = userService.getUserByToken(token)
+                    RoomDto.from(it, it.validateOwner(requestUser), participants) }
                 .toList()
+
+        userRoomMapService
 
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
