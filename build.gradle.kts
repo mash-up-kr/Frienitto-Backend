@@ -36,6 +36,7 @@ subprojects {
         }
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+        testImplementation("org.awaitility:awaitility-kotlin:3.1.6")
     }
 
     tasks.withType<KotlinCompile> {
@@ -69,6 +70,7 @@ project(":manitto") {
         implementation("com.querydsl:querydsl-jpa:${extra["querydslVersion"]}")
         kapt("com.querydsl:querydsl-apt:${extra["querydslVersion"]}:jpa")
         kapt("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
+
 
         runtimeOnly("com.h2database:h2")
         runtimeOnly("mysql:mysql-connector-java")
