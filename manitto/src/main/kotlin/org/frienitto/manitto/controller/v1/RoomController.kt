@@ -51,6 +51,13 @@ class RoomController(
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.joinRoomByTitle(user, byTitleRequest))
     }
 
+    @ApiOperation(value = "방 입장하기")
+    @ApiResponses(value = [
+        ApiResponse(code = 200, message = "OK", response = RoomDetailInfo::class),
+        ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
+        ApiResponse(code = 404, message = "요청 하신 방을 찾을 수가 없습니다.", response = ErrorInfo::class),
+        ApiResponse(code = 405, message = "방 생성 코드가 적합하지 않습니다.", response = ErrorInfo::class),
+        ApiResponse(code = 409, message = "입장 가능한 상태가 아닙니다.", response = ErrorInfo::class)])
     @PostMapping("/join/room/{id}")
     fun joinRoomById(@RequestHeader("X-Authorization") token: String, @PathVariable("id") roomId: Long, @RequestBody byIdRequest: RoomJoinByIdRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
