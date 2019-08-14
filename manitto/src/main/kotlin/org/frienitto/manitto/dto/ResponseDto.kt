@@ -31,11 +31,11 @@ data class RoomDto(
 
 data class MatchResultDto(val roomId: Long, val roomStatus: RoomStatus, val missions: List<MissionDto>)
 
-data class MissionDto(val id: Long, val sourceId: Long, val targetId: Long, val description: String, val status: MissionStatus, val type: MissionType) {
+data class MissionDto(val id: Long, val from: ParticipantDto, val to: ParticipantDto, val description: String, val status: MissionStatus, val type: MissionType) {
 
     companion object {
-        fun from(mission: Mission): MissionDto {
-            return MissionDto(mission.id!!, mission.sourceId, mission.targetId, mission.description, mission.status, mission.type)
+        fun from(mission: Mission, from: ParticipantDto, to: ParticipantDto): MissionDto {
+            return MissionDto(mission.id!!, from, to, mission.description, mission.status, mission.type)
         }
     }
 }

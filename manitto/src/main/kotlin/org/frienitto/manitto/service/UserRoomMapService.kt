@@ -27,6 +27,11 @@ class UserRoomMapService(private val userRoomMapRepository: UserRoomMapRepositor
         return if (maps.isEmpty()) throw ResourceNotFoundException() else maps
     }
 
+    @Transactional(readOnly = false)
+    fun getByUserIdWithAll(userId: Long): List<UserRoomMap> {
+        return userRoomMapRepository.findByUserIdWithAllRelationship(userId)
+    }
+
     @Transactional
     fun connect(user: User, room: Room): UserRoomMap {
         return userRoomMapRepository.save(UserRoomMap.newUserRoomMap(room, user))

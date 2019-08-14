@@ -10,4 +10,6 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping(value = ["/api/v1"])
-class UserController(private val userService: UserService)
+class UserController(private val userService: UserService) {
+
+}

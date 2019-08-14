@@ -1,10 +1,7 @@
 package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.User
-import org.frienitto.manitto.dto.AccessTokenWithUserInfo
-import org.frienitto.manitto.dto.SignInDto
-import org.frienitto.manitto.dto.SignUpDto
-import org.frienitto.manitto.dto.UserDto
+import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.UserRepository
@@ -12,11 +9,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(private val userRepository: UserRepository, private val userRoomMapService: UserRoomMapService) {
 
     @Transactional(readOnly = true)
     fun getUserByToken(userToken: String): User {
         return userRepository.findByToken(userToken) ?: throw NonAuthorizationException(errorMsg = "인증되지 않은 사용자 입니다.")
+    }
+
+    @Transactional(readOnly = true)
+    fun getUserById(userId: Long): User {
+        return userRepository.findById(userId).orElseThrow { throw ResourceNotFoundException() }
     }
 
     @Transactional
@@ -38,5 +40,11 @@ class UserService(private val userRepository: UserRepository) {
             throw NonAuthorizationException(errorMsg = "찾을 수 없는 사용자 입니다.")
         }
         return AccessTokenWithUserInfo(user.token, user.tokenExpiresDate, UserDto.from(user))
+    }
+
+    @Transactional(readOnly = true)
+    fun getMyRoomsOrEmpty(token: String): List<RoomDto> {
+        val user = getUserByToken(token)
+        return userRoomMapService.getByUserIdWithAll(user.id!!).map { RoomDto.from(it.room, it.room.validateOwner(user)) }
     }
 }

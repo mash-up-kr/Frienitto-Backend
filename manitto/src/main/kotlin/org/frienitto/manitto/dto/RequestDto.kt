@@ -22,7 +22,9 @@ data class RoomCreateRequest(
 
 data class RoomRetrieveRequest(val userToken: String, val roomId: Long? = null, val title: String? = null)
 
-data class RoomJoinRequest(val title: String, val code: String)
+data class RoomJoinByTitleRequest(val title: String, val code: String)
+
+data class RoomJoinByIdRequest(val code: String)
 
 data class RoomExitRequest(val title: String)
 

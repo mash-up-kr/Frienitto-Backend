@@ -4,7 +4,7 @@ import org.frienitto.manitto.SpringTestSupport
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.domain.UserRoomMap
-import org.frienitto.manitto.dto.RoomJoinRequest
+import org.frienitto.manitto.dto.RoomJoinByTitleRequest
 import org.frienitto.manitto.exception.InvalidStatusException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.ResourceNotFoundException
@@ -51,7 +51,7 @@ class UserRoomMapServiceTest : SpringTestSupport() {
 
         //when, then
         Assertions.assertThrows(InvalidStatusException::class.java) {
-            userRoomMapService.joinRoomByTitle(user, RoomJoinRequest(TITLE, CODE))
+            userRoomMapService.joinRoomByTitle(user, RoomJoinByTitleRequest(TITLE, CODE))
         }
     }
 
@@ -63,7 +63,7 @@ class UserRoomMapServiceTest : SpringTestSupport() {
 
         //when, then
         Assertions.assertThrows(NonAuthorizationException::class.java) {
-            userRoomMapService.joinRoomByTitle(user, RoomJoinRequest(TITLE, INVALID_CODE))
+            userRoomMapService.joinRoomByTitle(user, RoomJoinByTitleRequest(TITLE, INVALID_CODE))
         }
     }
 

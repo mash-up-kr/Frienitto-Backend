@@ -4,7 +4,7 @@ import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.dto.RoomCreateRequest
 import org.frienitto.manitto.dto.RoomDto
-import org.frienitto.manitto.dto.RoomJoinRequest
+import org.frienitto.manitto.dto.RoomJoinByTitleRequest
 import org.frienitto.manitto.dto.RoomRetrieveRequest
 import org.frienitto.manitto.exception.BadRequestException
 import org.frienitto.manitto.exception.NonAuthorizationException
@@ -40,10 +40,10 @@ class RoomService(private val roomRepository: RoomRepository,
     }
 
     @Transactional
-    fun joinRoomByTitle(user: User, request: RoomJoinRequest): RoomDto {
-        val room = roomRepository.findByTitle(request.title) ?: throw ResourceNotFoundException(errorMsg = "요청한 방을 찾을 수 없습니다.")
+    fun joinRoomByTitle(user: User, byTitleRequest: RoomJoinByTitleRequest): RoomDto {
+        val room = roomRepository.findByTitle(byTitleRequest.title) ?: throw ResourceNotFoundException(errorMsg = "요청한 방을 찾을 수 없습니다.")
 
-        if (room.code != request.code) {
+        if (room.code != byTitleRequest.code) {
             throw NonAuthorizationException(errorCode = 405, errorMsg = "방 생성 코드가 맞지 않음")
         }
 

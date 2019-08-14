@@ -11,7 +11,6 @@ import org.frienitto.manitto.dto.MatchResultDto
 import org.frienitto.manitto.dto.MissionDto
 import org.frienitto.manitto.dto.Response
 import org.frienitto.manitto.service.MissionService
-import org.frienitto.manitto.service.UserRoomMapService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -25,6 +24,7 @@ class MatchingController(private val missionService: MissionService) {
 
     @ApiOperation(value = "매칭 시작 API", response = MatchResultInfo::class)
     @ApiResponses(value = [ApiResponse(code = 200, message = "OK"),
+        ApiResponse(code = 401, message = "방장이 아니거나 토큰 값이 유효하지 않습니다."),
         ApiResponse(code = 404, message = "NOT FOUND"),
         ApiResponse(code = 5003, message = "해당 요청에서 미션 타입이 적절하지 않습니다.")])
     @PostMapping("/matching")
@@ -37,10 +37,6 @@ class MatchingController(private val missionService: MissionService) {
     @GetMapping("/matching-info/room/{id}")
     fun getUserMatchingInfo(@RequestHeader(name = "X-Authorization") token: String, @PathVariable(name = "id") roomId: Long): Response<List<MissionDto>> {
         val result = missionService.getUserMissionsByRoomId(roomId)
-                .asSequence()
-                .map { MissionDto.from(it) }
-                .toList()
-
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
 }

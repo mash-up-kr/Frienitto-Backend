@@ -25,6 +25,17 @@ class UserRoomMapRepositoryImpl : UserRoomMapCustomRepository, QuerydslBaseSuppo
         return query.fetch()
     }
 
+    override fun findByUserIdWithAllRelationship(userId: Long): List<UserRoomMap> {
+        val query: JPQLQuery<UserRoomMap> = from(qUserRoomMap)
+                .innerJoin(qUserRoomMap.room, qRoom)
+                .fetchJoin()
+                .innerJoin(qUserRoomMap.user, qUser)
+                .fetchJoin()
+                .where(qUserRoomMap.user.id.eq(userId))
+
+        return query.fetch()
+    }
+
     override fun deleteByRoomId(roomId: Long): Long {
         return delete(qUserRoomMap)
                 .where(qUserRoomMap.room.id.eq(roomId))

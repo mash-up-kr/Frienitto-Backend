@@ -6,7 +6,6 @@ import org.frienitto.manitto.controller.swagger.model.RoomListInfo
 import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.RoomService
-import org.frienitto.manitto.service.UserRoomMapService
 import org.frienitto.manitto.service.UserService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -47,9 +46,15 @@ class RoomController(
         ApiResponse(code = 405, message = "방 생성 코드가 적합하지 않습니다.", response = ErrorInfo::class),
         ApiResponse(code = 409, message = "입장 가능한 상태가 아닙니다.", response = ErrorInfo::class)])
     @PostMapping("/join/room")
-    fun joinRoom(@RequestHeader("X-Authorization") token: String, @RequestBody request: RoomJoinRequest): Response<RoomDto> {
+    fun joinRoomByTitle(@RequestHeader("X-Authorization") token: String, @RequestBody byTitleRequest: RoomJoinByTitleRequest): Response<RoomDto> {
         val user = userService.getUserByToken(token)
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.joinRoomByTitle(user, request))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.joinRoomByTitle(user, byTitleRequest))
+    }
+
+    @PostMapping("/join/room/{id}")
+    fun joinRoomById(@RequestHeader("X-Authorization") token: String, @PathVariable("id") roomId: Long, @RequestBody byIdRequest: RoomJoinByIdRequest): Response<RoomDto> {
+        val user = userService.getUserByToken(token)
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.joinRoomById(user, roomId, byIdRequest.code))
     }
 
     @ApiOperation(value = "ID로 자세한 방 정보 가져오기", response = RoomDetailInfo::class)
