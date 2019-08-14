@@ -8,6 +8,7 @@ import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserRoomMapService
 import org.frienitto.manitto.service.UserService
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -24,6 +25,7 @@ class RoomController(
         private val roomService: RoomService,
         private val userService: UserService
 ) {
+
     @ApiOperation(value = "방 등록하기", response = RoomDetailInfo::class)
     @ApiResponses(value = [ApiResponse(code = 201, message = "방 등록 완료", response = ErrorInfo::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
@@ -50,16 +52,27 @@ class RoomController(
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.joinRoomByTitle(user, request))
     }
 
-    @ApiOperation(value = "자세한 방 정보 가져오기", response = RoomDetailInfo::class)
+    @ApiOperation(value = "ID로 자세한 방 정보 가져오기", response = RoomDetailInfo::class)
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK", response = RoomDetailInfo::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
         ApiResponse(code = 404, message = "요청 하신 방을 찾을 수가 없습니다.", response = ErrorInfo::class)])
     @GetMapping("/room/{id}")
     fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @PathVariable("id") roomId: Long): Response<RoomDto> {
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomInfoWithValidateOwner(RoomRetrieveRequest(token, roomId)))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomInfoWithValidateOwner(RoomRetrieveRequest(userToken = token, roomId = roomId)))
     }
-    @ApiOperation(value = "방 삭제", response = Nothing::class)
+
+    @ApiOperation(value = "방 제목으로 자세한 방 정보 가져오기", response = RoomDetailInfo::class)
+    @ApiResponses(value = [
+        ApiResponse(code = 200, message = "OK", response = RoomDetailInfo::class),
+        ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
+        ApiResponse(code = 404, message = "요청 하신 방을 찾을 수가 없습니다.", response = ErrorInfo::class)])
+    @GetMapping("/room")
+    fun getRoomDetail(@RequestHeader(name = "X-Authorization") token: String, @RequestParam("title") title: String): Response<RoomDto> {
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomInfoWithValidateOwner(RoomRetrieveRequest(userToken = token, title = title)))
+    }
+
+    @ApiOperation(value = "방 퇴장하기", response = Nothing::class)
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK", response = Nothing::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
@@ -79,10 +92,10 @@ class RoomController(
         ApiResponse(code = 200, message = "OK", response = RoomListInfo::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class)])
     @GetMapping("/room/list")
-    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
-        userService.getUserByToken(token)
-        val result = roomService.getRoomList().stream()
-                .map { RoomDto.from(it) }
+    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String, pageable: Pageable): Response<List<RoomDto>> {
+        val user = userService.getUserByToken(token)
+        val result = roomService.getRoomList(user).stream()
+                .map { RoomDto.from(it, it.validateOwner(user)) }
                 .toList()
 
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)

@@ -1,7 +1,7 @@
 package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.User
-import org.frienitto.manitto.dto.AccessToken
+import org.frienitto.manitto.dto.AccessTokenWithUserInfo
 import org.frienitto.manitto.dto.SignInDto
 import org.frienitto.manitto.dto.SignUpDto
 import org.frienitto.manitto.dto.UserDto
@@ -31,12 +31,12 @@ class UserService(private val userRepository: UserRepository) {
         return UserDto.from(user)
     }
 
-    fun signIn(signInDto: SignInDto): AccessToken {
+    fun signIn(signInDto: SignInDto): AccessTokenWithUserInfo {
         val user = userRepository.findByEmail(signInDto.email) ?: throw ResourceNotFoundException(errorMsg = "찾을 수 없는 사용자 입니다.")
 
         if (user.password != signInDto.password) {
             throw NonAuthorizationException(errorMsg = "찾을 수 없는 사용자 입니다.")
         }
-        return AccessToken(user.token, user.tokenExpiresDate)
+        return AccessTokenWithUserInfo(user.token, user.tokenExpiresDate, UserDto.from(user))
     }
 }

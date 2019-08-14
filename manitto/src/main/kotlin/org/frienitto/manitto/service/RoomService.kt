@@ -6,6 +6,7 @@ import org.frienitto.manitto.dto.RoomCreateRequest
 import org.frienitto.manitto.dto.RoomDto
 import org.frienitto.manitto.dto.RoomJoinRequest
 import org.frienitto.manitto.dto.RoomRetrieveRequest
+import org.frienitto.manitto.exception.BadRequestException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
@@ -66,14 +67,19 @@ class RoomService(private val roomRepository: RoomRepository,
 
     //TODO 페이징 처리 해야함
     @Transactional(readOnly = true)
-    fun getRoomList(): List<Room> {
+    fun getRoomList(user: User): List<Room> {
         return roomRepository.findAll()
     }
 
     @Transactional(readOnly = true)
     fun getRoomInfoWithValidateOwner(retrieveRequest: RoomRetrieveRequest): RoomDto {
-        val room = roomRepository.findById(retrieveRequest.roomId).orElseThrow { ResourceNotFoundException(errorMsg = "해당 요청하는 방을 찾을 수 없습니다.") }
-        val participants = userRoomMapService.getParticipantsByRoomId(retrieveRequest.roomId)
+        val room = when {
+            retrieveRequest.title != null -> roomRepository.findByTitle(retrieveRequest.title) ?: throw ResourceNotFoundException(errorMsg = "해당 요청하는 방을 찾을 수 없습니다.")
+            retrieveRequest.roomId != null -> roomRepository.findById(retrieveRequest.roomId).orElseThrow { ResourceNotFoundException(errorMsg = "해당 요청하는 방을 찾을 수 없습니다.") }
+            else -> throw BadRequestException()
+        }
+
+        val participants = userRoomMapService.getParticipantsByRoomId(room.id!!)
         val requestUser = userService.getUserByToken(retrieveRequest.userToken)
 
         return RoomDto.from(room = room, isOwner = room.validateOwner(requestUser), participants = participants)

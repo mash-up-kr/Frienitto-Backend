@@ -62,7 +62,7 @@ class AuthController(private val authService: AuthService, private val userServi
         ApiResponse(code = 404, message = "이메일을 찾을 수 없습니다.")
     ])
     @PostMapping(value = ["/sign-in"])
-    fun signIn(@ApiParam(value = "로그인 Body") @RequestBody body: SignInDto): Response<AccessToken> {
+    fun signIn(@ApiParam(value = "로그인 Body") @RequestBody body: SignInDto): Response<AccessTokenWithUserInfo> {
         val accessToken = userService.signIn(body)
 
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, accessToken)

@@ -1,6 +1,6 @@
 package org.frienitto.manitto.domain
 
-import org.frienitto.manitto.dto.AccessToken
+import org.frienitto.manitto.dto.AccessTokenWithUserInfo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -64,7 +64,7 @@ class User private constructor(
     @PrePersist
     fun onPersist() {
         val now = LocalDateTime.now()
-        val accessToken = AccessToken.newToken(this.email)
+        val accessToken = AccessTokenWithUserInfo.newToken(this.email)
         this.token = accessToken.token
         this.tokenExpiresDate = accessToken.tokenExpiresDate
         this.salt = System.currentTimeMillis().toString()

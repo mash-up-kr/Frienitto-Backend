@@ -39,7 +39,7 @@ Content-Type: application/json
   "password": "1234"
 }
 
-### 룸 생성
+### 방 생성
 POST http://localhost:8080/api/v1/register/room
 Content-Type: application/json
 X-Authorization: 76C03F7BFF07F92ED53B14BDC1C7EE0E
@@ -50,7 +50,7 @@ X-Authorization: 76C03F7BFF07F92ED53B14BDC1C7EE0E
   "expires_date": "2020-01-01"
 }
 
-### 룸 조인
+### 방 조인
 POST http://localhost:8080/api/v1/join/room
 Content-Type: application/json
 X-Authorization: 1C86B939487C95365498889C524593F8
@@ -60,19 +60,23 @@ X-Authorization: 1C86B939487C95365498889C524593F8
   "code": "dkaf931"
 }
 
-### 룸 리스트 가져오기
+### 방 리스트 가져오기
 GET http://localhost:8080/api/v1/room/list
 Content-Type: application/json
-X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
+X-Authorization: F395BF3DF03AB3E4718BC6D08914DA7B
 
 ### 방의 매칭 정보 가져오기
 GET http://localhost:8080/api/v1/matching-info/room/1
 Content-Type: application/json
 X-Authorization: FEAA9DC8F3A7F5DFE6DEBCD3114947D6
 
-### 룸 정보 가져오기
+### 방 정보 가져오기
 GET http://localhost:8080/api/v1/room/2
-X-Authorization: AF1C8FBD13559B5FFECA93BDC57749B6
+X-Authorization: F395BF3DF03AB3E4718BC6D08914DA7B
+
+### 방 제목으로 정보 가져오기
+GET http://localhost:8080/api/v1/room?title=테스트방6
+X-Authorization: F395BF3DF03AB3E4718BC6D08914DA7B
 
 ### 마니또 매칭
 POST http://localhost:8080/api/v1/matching

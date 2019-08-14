@@ -1,7 +1,6 @@
 package org.frienitto.manitto.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import org.frienitto.manitto.domain.Mission
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User

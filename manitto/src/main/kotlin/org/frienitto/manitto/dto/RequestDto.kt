@@ -20,7 +20,7 @@ data class RoomCreateRequest(
         val expiresDate: LocalDate
 )
 
-data class RoomRetrieveRequest(val userToken: String, val roomId: Long)
+data class RoomRetrieveRequest(val userToken: String, val roomId: Long? = null, val title: String? = null)
 
 data class RoomJoinRequest(val title: String, val code: String)
 
