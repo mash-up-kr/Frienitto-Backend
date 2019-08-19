@@ -7,10 +7,12 @@ import org.frienitto.manitto.dto.MatchRequest
 import org.frienitto.manitto.dto.MatchResultDto
 import org.frienitto.manitto.dto.MissionDto
 import org.frienitto.manitto.dto.ParticipantDto
+import org.frienitto.manitto.exception.BadRequestException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.NotSupportException
 import org.frienitto.manitto.repository.MissionRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class MissionService(private val missionRepository: MissionRepository,
@@ -27,12 +29,19 @@ class MissionService(private val missionRepository: MissionRepository,
         return missions.map { MissionDto.from(it, maps[it.sourceId]!!, maps[it.targetId]!!) }
     }
 
+    @Transactional
     fun match(matchRequest: MatchRequest): MatchResultDto {
         val room = roomService.getRoomById(matchRequest.roomId)
         val user = userService.getUserById(matchRequest.ownerId)
 
         if (room.validateOwner(user)) {
             throw NonAuthorizationException()
+        }
+
+        val participants = roomMapService.getParticipantsByRoomId(matchRequest.roomId)
+
+        if (participants.size < 2) {
+            throw BadRequestException(errorMsg = "매칭을 시작하려면 매칭 인원이 2명 이상이어야 합니다.")
         }
 
         room.matched()
@@ -43,15 +52,13 @@ class MissionService(private val missionRepository: MissionRepository,
             return MatchResultDto(
                     matchedRoom.id!!,
                     matchedRoom.status,
-                    matchUser(matchRequest))
+                    matchUser(matchRequest, participants))
         } else {
             throw NotSupportException(errorMsg = "해당 요청에서 미션 타입이 적절하지 않습니다.")
         }
     }
 
-    private fun matchUser(matchRequest: MatchRequest): List<MissionDto> {
-        val participants = roomMapService.getParticipantsByRoomId(matchRequest.roomId)
-
+    private fun matchUser(matchRequest: MatchRequest, participants: List<ParticipantDto>): List<MissionDto> {
         val maps: MutableMap<Long, ParticipantDto> = toParticipantsMap(participants)
 
         val participantIds = participants.asSequence()

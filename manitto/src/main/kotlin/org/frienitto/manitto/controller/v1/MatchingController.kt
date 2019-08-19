@@ -10,6 +10,7 @@ import org.frienitto.manitto.dto.MatchRequest
 import org.frienitto.manitto.dto.MatchResultDto
 import org.frienitto.manitto.dto.MissionDto
 import org.frienitto.manitto.dto.Response
+import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.MissionService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -23,10 +24,13 @@ import org.springframework.web.bind.annotation.*
 class MatchingController(private val missionService: MissionService) {
 
     @ApiOperation(value = "매칭 시작 API", response = MatchResultInfo::class)
-    @ApiResponses(value = [ApiResponse(code = 200, message = "OK"),
-        ApiResponse(code = 401, message = "방장이 아니거나 토큰 값이 유효하지 않습니다."),
-        ApiResponse(code = 404, message = "NOT FOUND"),
-        ApiResponse(code = 5003, message = "해당 요청에서 미션 타입이 적절하지 않습니다.")])
+    @ApiResponses(value = [
+        ApiResponse(code = 200, message = "OK"),
+        ApiResponse(code = 400, message = "매칭을 시작하려면 매칭 인원이 2명 이상이어야 합니다.", response = ErrorInfo::class),
+        ApiResponse(code = 401, message = "방장이 아니거나 토큰 값이 유효하지 않습니다.", response = ErrorInfo::class),
+        ApiResponse(code = 404, message = "NOT FOUND", response = ErrorInfo::class),
+        ApiResponse(code = 5003, message = "해당 요청에서 미션 타입이 적절하지 않습니다.", response = ErrorInfo::class)
+    ])
     @PostMapping("/matching")
     fun match(@RequestHeader(name = "X-Authorization") token: String, @RequestBody body: MatchRequest): Response<MatchResultDto> {
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, missionService.match(body))

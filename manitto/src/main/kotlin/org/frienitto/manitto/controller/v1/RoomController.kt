@@ -29,7 +29,8 @@ class RoomController(
     @ApiResponses(value = [ApiResponse(code = 201, message = "방 등록 완료", response = ErrorInfo::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
         ApiResponse(code = 404, message = "등록된 방을 찾을 수 없습니다.", response = ErrorInfo::class),
-        ApiResponse(code = 405, message = "방 생성 코드가 적합하지 않습니다.", response = ErrorInfo::class)
+        ApiResponse(code = 405, message = "방 생성 코드가 적합하지 않습니다.", response = ErrorInfo::class),
+        ApiResponse(code = 409, message = "이미 존재하는 방 제목 입니다.", response = ErrorInfo::class)
     ])
     @PostMapping("/register/room")
     fun createRoom(@RequestHeader("X-Authorization") token: String, @Valid @RequestBody createRequest: RoomCreateRequest): Response<RoomDto> {

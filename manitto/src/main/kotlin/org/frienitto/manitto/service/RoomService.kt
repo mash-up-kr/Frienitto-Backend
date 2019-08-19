@@ -7,6 +7,7 @@ import org.frienitto.manitto.dto.RoomDto
 import org.frienitto.manitto.dto.RoomJoinByTitleRequest
 import org.frienitto.manitto.dto.RoomRetrieveRequest
 import org.frienitto.manitto.exception.BadRequestException
+import org.frienitto.manitto.exception.DuplicateDataException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
@@ -20,6 +21,10 @@ class RoomService(private val roomRepository: RoomRepository,
 
     @Transactional
     fun createRoom(owner: User, createRequest: RoomCreateRequest): RoomDto {
+        roomRepository.findByTitle(createRequest.title)?.let {
+            throw DuplicateDataException(errorMsg = "이미 존재하는 방 제목 입니다.")
+        }
+
         val room = save(Room.newRoom(owner, createRequest.title, createRequest.code, createRequest.expiresDate))
         joinRoomById(owner, room.id!!, room.code)
 

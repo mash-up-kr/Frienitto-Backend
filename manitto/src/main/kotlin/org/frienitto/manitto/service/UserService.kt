@@ -2,6 +2,7 @@ package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.User
 import org.frienitto.manitto.dto.*
+import org.frienitto.manitto.exception.DuplicateDataException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.UserRepository
@@ -21,13 +22,17 @@ class UserService(private val userRepository: UserRepository, private val userRo
         return userRepository.findById(userId).orElseThrow { throw ResourceNotFoundException() }
     }
 
-    @Transactional
     fun signUp(signUpDto: SignUpDto): UserDto {
+        userRepository.findByEmail(signUpDto.email)?.let {
+            throw DuplicateDataException(errorMsg = "이미 등록된 이메일 입니다.")
+        }
+
         val user = User.newUser(username = signUpDto.username,
                 description = signUpDto.description,
                 imageCode = signUpDto.imageCode,
                 email = signUpDto.email,
                 password = signUpDto.password)
+
 
         userRepository.save(user)
         return UserDto.from(user)
