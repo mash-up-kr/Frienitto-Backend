@@ -23,16 +23,12 @@ class UserService(private val userRepository: UserRepository, private val userRo
     }
 
     fun signUp(signUpDto: SignUpDto): UserDto {
-        userRepository.findByEmail(signUpDto.email)?.let {
-            throw DuplicateDataException(errorMsg = "이미 등록된 이메일 입니다.")
-        }
 
         val user = User.newUser(username = signUpDto.username,
                 description = signUpDto.description,
                 imageCode = signUpDto.imageCode,
                 email = signUpDto.email,
                 password = signUpDto.password)
-
 
         userRepository.save(user)
         return UserDto.from(user)

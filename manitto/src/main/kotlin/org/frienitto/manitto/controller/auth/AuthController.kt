@@ -20,7 +20,8 @@ class AuthController(private val authService: AuthService, private val userServi
     @ApiOperation(value = "회원가입 코드 발행", response = Response::class)
     @ApiResponses(value = [
         ApiResponse(code = 202, message = "Accepted"),
-        ApiResponse(code = 5004, message = "메일 전송을 실패했습니다.")
+        ApiResponse(code = 5004, message = "메일 전송을 실패했습니다."),
+        ApiResponse(code = 409, message = "이미 등록된 이메일 입니다.", response = ErrorInfo::class)
     ])
     @PostMapping(value = ["/issue/code"])
     fun issueCode(@RequestBody body: IssueCodeRequest): Response<Unit> {
@@ -42,8 +43,7 @@ class AuthController(private val authService: AuthService, private val userServi
     @ApiOperation(value = "회원가입", response = SignUpInfo::class)
     @ApiResponses(value = [
         ApiResponse(code = 201, message = "Created", response = SignUpInfo::class),
-        ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
-        ApiResponse(code = 409, message = "이미 등록된 이메일 입니다.", response = ErrorInfo::class)
+        ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class)
     ])
     @PostMapping(value = ["/sign-up"])
     fun signUp(@ApiParam(value = "회원가입하기 위해서 필요한 토큰") @RequestHeader("X-Register-Token") registerToken: String,

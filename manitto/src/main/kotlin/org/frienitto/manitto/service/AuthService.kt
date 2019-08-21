@@ -1,5 +1,6 @@
 package org.frienitto.manitto.service
 
+import org.frienitto.manitto.exception.DuplicateDataException
 import org.frienitto.manitto.exception.NonAuthorizationException
 import org.frienitto.manitto.repository.UserRepository
 import org.frienitto.manitto.util.generateAuthCode
@@ -22,6 +23,9 @@ class AuthService(private val emailService: EmailService, private val userReposi
     }
 
     fun sendAuthCodeToEmail(to: String) {
+        userRepository.findByEmail(to)?.let {
+            throw DuplicateDataException(errorMsg = "이미 등록된 이메일 입니다.")
+        }
         val key = to + System.currentTimeMillis().toString()
         val code = generateAuthCode(key)
         val registerToken = generateToken(key, 32)
