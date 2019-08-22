@@ -29,9 +29,16 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = [DuplicateDataException::class])
-    fun duplicateDateExceptionHandler(exception: DuplicateDataException) : ResponseEntity<ErrorInfo>{
+    fun duplicateDateExceptionHandler(exception: DuplicateDataException): ResponseEntity<ErrorInfo> {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(ErrorInfo(exception.errorCode, exception.errorMsg))
+    }
+
+    @ExceptionHandler(value = [BadRequestException::class])
+    fun badRequestExceptionHandler(exception: BadRequestException): ResponseEntity<ErrorInfo> {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorInfo(exception.errorCode, exception.errorMsg))
     }
 }
