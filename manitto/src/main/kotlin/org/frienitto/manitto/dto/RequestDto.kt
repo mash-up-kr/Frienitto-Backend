@@ -5,7 +5,7 @@ import java.time.LocalDate
 import javax.validation.constraints.Future
 import javax.validation.constraints.NotBlank
 
-data class MatchRequest(val roomId:Long, val ownerId: Long, val type: MissionType)
+data class MatchRequest(val roomId:Long, val type: MissionType)
 
 data class IssueCodeRequest(val receiverInfo: String, val type: String)
 

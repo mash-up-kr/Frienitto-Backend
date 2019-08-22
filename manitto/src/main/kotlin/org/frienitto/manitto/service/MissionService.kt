@@ -30,11 +30,11 @@ class MissionService(private val missionRepository: MissionRepository,
     }
 
     @Transactional
-    fun match(matchRequest: MatchRequest): MatchResultDto {
+    fun match(matchRequest: MatchRequest, token: String): MatchResultDto {
         val room = roomService.getRoomById(matchRequest.roomId)
-        val user = userService.getUserById(matchRequest.ownerId)
+        val user = userService.getUserByToken(token)
 
-        if (room.validateOwner(user)) {
+        if (!room.validateOwner(user)) {
             throw NonAuthorizationException()
         }
 

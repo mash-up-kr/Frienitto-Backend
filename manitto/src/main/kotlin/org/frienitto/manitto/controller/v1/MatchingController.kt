@@ -33,7 +33,7 @@ class MatchingController(private val missionService: MissionService) {
     ])
     @PostMapping("/matching")
     fun match(@RequestHeader(name = "X-Authorization") token: String, @RequestBody body: MatchRequest): Response<MatchResultDto> {
-        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, missionService.match(body))
+        return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, missionService.match(body, token))
     }
 
     @ApiOperation(value = "매칭된 방의 미션 정보 가져오는 API", response = MatchListInfo::class)
