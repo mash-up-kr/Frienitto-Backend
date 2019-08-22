@@ -61,12 +61,12 @@ class Mission private constructor(
             field = value
         }
     lateinit var createdAt: LocalDateTime
-    var createdBy: String? = null
+    var createdBy: String = "system"
         private set(value) {
             field = value
         }
     lateinit var updatedAt: LocalDateTime
-    var updatedBy: String? = null
+    var updatedBy: String = "system"
         private set(value) {
             field = value
         }
