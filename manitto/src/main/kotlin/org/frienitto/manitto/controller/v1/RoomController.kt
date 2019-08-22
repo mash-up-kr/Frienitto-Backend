@@ -105,7 +105,7 @@ class RoomController(
         ApiResponse(code = 200, message = "OK", response = RoomListInfo::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class)])
     @GetMapping("/room/list")
-    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String, pageable: Pageable): Response<List<RoomDto>> {
+    fun getRoomList(@RequestHeader(name = "X-Authorization") token: String): Response<List<RoomDto>> {
         val user = userService.getUserByToken(token)
         val result = roomService.getRoomList(user).stream()
                 .map { RoomDto.from(it, it.validateOwner(user)) }
