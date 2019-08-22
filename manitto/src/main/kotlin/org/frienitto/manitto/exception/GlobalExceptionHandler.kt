@@ -27,4 +27,11 @@ class GlobalExceptionHandler {
     fun notSupportExceptionHandler(exception: NotSupportException): ResponseEntity<ErrorInfo> {
         return ResponseEntity.ok(ErrorInfo(exception.errorCode, exception.errorMsg))
     }
+
+    @ExceptionHandler(value = [DuplicateDataException::class])
+    fun duplicateDateExceptionHandler(exception: DuplicateDataException) : ResponseEntity<ErrorInfo>{
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorInfo(exception.errorCode, exception.errorMsg))
+    }
 }
