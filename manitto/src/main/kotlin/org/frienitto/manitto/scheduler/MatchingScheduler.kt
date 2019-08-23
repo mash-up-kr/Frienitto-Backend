@@ -10,7 +10,7 @@ import java.time.LocalDate
 class MatchingScheduler(
         private val roomRepository: RoomRepository) {
 
-    @Scheduled(cron = "5 0 * * *")
+    @Scheduled(cron = "5 0 * * * MON-SUN")
     fun makeExpiredmatchingList() {
         val list = roomRepository.findAll()
                 .filter { it.status == RoomStatus.MATCHED }
