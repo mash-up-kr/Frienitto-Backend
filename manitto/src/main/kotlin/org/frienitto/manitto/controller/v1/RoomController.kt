@@ -114,7 +114,7 @@ class RoomController(
     }
 
     @GetMapping("/room/expired")
-    fun updateRoomExpired(@RequestHeader(name = "X-Authorization") token: String): Response<Unit> {
+    fun updateRoomExpired(): Response<Unit> {
         val result = roomService.updateRoomExpired()
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, result)
     }
