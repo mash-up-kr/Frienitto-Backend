@@ -9,7 +9,9 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar
 @Configuration
 class ScheduledConfig : SchedulingConfigurer {
 
-    private val POOL_SIZE = 10
+    companion object {
+        private const val POOL_SIZE = 5
+    }
 
     override fun configureTasks(taskRegistrar: ScheduledTaskRegistrar) {
         val threadPoolTaskScheduler = ThreadPoolTaskScheduler()
