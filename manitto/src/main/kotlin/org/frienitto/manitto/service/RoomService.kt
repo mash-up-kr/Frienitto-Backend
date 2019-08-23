@@ -2,6 +2,7 @@ package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
+import org.frienitto.manitto.domain.constant.RoomStatus
 import org.frienitto.manitto.dto.RoomCreateRequest
 import org.frienitto.manitto.dto.RoomDto
 import org.frienitto.manitto.dto.RoomJoinByTitleRequest
@@ -45,6 +46,24 @@ class RoomService(private val roomRepository: RoomRepository,
     }
 
     @Transactional
+    fun deleteRoomByRoomId(user: User, roomId: Long): Unit {
+        val optionalRoom = roomRepository.findById(roomId)
+
+        if(!optionalRoom.isPresent){
+            throw ResourceNotFoundException(errorMsg = "삭제 가능한 방이 없습니다.")
+        }
+        val room = optionalRoom.get()
+
+        if (room.validateOwner(user)) {
+            userRoomMapService.disconnectAllByRoomId(room.id!!)
+            roomRepository.delete(room)
+            return
+        }
+
+        userRoomMapService.disconnect(user.id!!, room.id!!)
+    }
+
+    @Transactional
     fun joinRoomByTitle(user: User, byTitleRequest: RoomJoinByTitleRequest): RoomDto {
         val room = roomRepository.findByTitle(byTitleRequest.title) ?: throw ResourceNotFoundException(errorMsg = "요청한 방을 찾을 수 없습니다.")
 
@@ -73,7 +92,7 @@ class RoomService(private val roomRepository: RoomRepository,
     //TODO 페이징 처리 해야함
     @Transactional(readOnly = true)
     fun getRoomList(user: User): List<Room> {
-        return roomRepository.findAll()
+        return roomRepository.findAll().filter { it.status != RoomStatus.EXPIRED }
     }
 
     @Transactional(readOnly = true)
