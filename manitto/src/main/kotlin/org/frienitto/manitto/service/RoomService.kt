@@ -101,15 +101,4 @@ class RoomService(private val roomRepository: RoomRepository,
     fun save(room: Room): Room {
         return roomRepository.save(room)
     }
-
-    fun updateRoomExpired(){
-        val list = roomRepository.findAll()
-                .filter { it.status == RoomStatus.MATCHED }
-                .filter {
-                    val now = LocalDate.now()
-                    now.isAfter(it.expiresDate)
-                }
-        list.forEach { it.expired() }
-        roomRepository.saveAll(list)
-    }
 }
