@@ -14,6 +14,7 @@ import org.frienitto.manitto.exception.ResourceNotFoundException
 import org.frienitto.manitto.repository.RoomRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class RoomService(private val roomRepository: RoomRepository,
@@ -99,5 +100,16 @@ class RoomService(private val roomRepository: RoomRepository,
     @Transactional
     fun save(room: Room): Room {
         return roomRepository.save(room)
+    }
+
+    fun updateRoomExpired(){
+        val list = roomRepository.findAll()
+                .filter { it.status == RoomStatus.MATCHED }
+                .filter {
+                    val now = LocalDate.now()
+                    now.isAfter(it.expiresDate)
+                }
+        list.forEach { it.expired() }
+        roomRepository.saveAll(list)
     }
 }
