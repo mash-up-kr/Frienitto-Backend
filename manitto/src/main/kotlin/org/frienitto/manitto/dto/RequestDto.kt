@@ -28,6 +28,8 @@ data class RoomJoinByIdRequest(val code: String)
 
 data class RoomExitRequest(val title: String)
 
+data class RoomExitByRoomIdRequest(val id: Long)
+
 data class SignUpDto(val username: String, val description: String, val imageCode: Int, val email: String, val password: String)
 
 data class SignInDto(val email: String, val password: String)

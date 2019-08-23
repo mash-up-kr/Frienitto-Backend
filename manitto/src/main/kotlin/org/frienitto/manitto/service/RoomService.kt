@@ -2,6 +2,7 @@ package org.frienitto.manitto.service
 
 import org.frienitto.manitto.domain.Room
 import org.frienitto.manitto.domain.User
+import org.frienitto.manitto.domain.constant.RoomStatus
 import org.frienitto.manitto.dto.RoomCreateRequest
 import org.frienitto.manitto.dto.RoomDto
 import org.frienitto.manitto.dto.RoomJoinByTitleRequest
@@ -73,7 +74,7 @@ class RoomService(private val roomRepository: RoomRepository,
     //TODO 페이징 처리 해야함
     @Transactional(readOnly = true)
     fun getRoomList(user: User): List<Room> {
-        return roomRepository.findAll()
+        return roomRepository.findAll().filter { it.status != RoomStatus.EXPIRED }
     }
 
     @Transactional(readOnly = true)

@@ -7,7 +7,6 @@ import org.frienitto.manitto.dto.*
 import org.frienitto.manitto.exception.model.ErrorInfo
 import org.frienitto.manitto.service.RoomService
 import org.frienitto.manitto.service.UserService
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
