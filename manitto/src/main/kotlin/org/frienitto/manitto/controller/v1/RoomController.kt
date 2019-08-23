@@ -84,29 +84,15 @@ class RoomController(
         return Response(HttpStatus.OK.value(), HttpStatus.OK.reasonPhrase, roomService.getRoomInfoWithValidateOwner(RoomRetrieveRequest(userToken = token, title = title)))
     }
 
-//    @ApiOperation(value = "방 퇴장하기", response = Nothing::class)
-//    @ApiResponses(value = [
-//        ApiResponse(code = 200, message = "OK", response = Nothing::class),
-//        ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
-//        ApiResponse(code = 404, message = "요청 하신 방을 찾을 수가 없습니다.", response = ErrorInfo::class)])
-//    @DeleteMapping("/exit/room")
-//    fun exitRoom(@RequestHeader(name = "X-Authorization") token: String, @RequestBody request: RoomExitRequest): ResponseEntity<Response<Unit>> {
-//        val user = userService.getUserByToken(token)
-//        roomService.deleteRoom(user, request.title)
-//
-//        return ResponseEntity.status(HttpStatus.ACCEPTED)
-//                .body(Response(HttpStatus.ACCEPTED.value(), HttpStatus.ACCEPTED.reasonPhrase))
-//    }
-
     @ApiOperation(value = "방 퇴장하기", response = Nothing::class)
     @ApiResponses(value = [
-        ApiResponse(code = 202, message = "삭제됨", response = Nothing::class),
+        ApiResponse(code = 200, message = "OK", response = Nothing::class),
         ApiResponse(code = 401, message = "인증 되지 않은 사용자입니다.", response = ErrorInfo::class),
         ApiResponse(code = 404, message = "요청 하신 방을 찾을 수가 없습니다.", response = ErrorInfo::class)])
     @DeleteMapping("/exit/room")
-    fun exitRoomByUserId(@RequestHeader(name = "X-Authorization") token: String, @RequestBody request: RoomExitByRoomIdRequest): ResponseEntity<Response<Unit>> {
+    fun exitRoom(@RequestHeader(name = "X-Authorization") token: String, @RequestBody request: RoomExitRequest): ResponseEntity<Response<Unit>> {
         val user = userService.getUserByToken(token)
-        roomService.deleteRoomByRoomId(user, request.id)
+        roomService.deleteRoom(user, request.title)
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(Response(HttpStatus.ACCEPTED.value(), HttpStatus.ACCEPTED.reasonPhrase))

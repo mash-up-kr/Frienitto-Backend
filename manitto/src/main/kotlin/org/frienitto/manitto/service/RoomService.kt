@@ -46,24 +46,6 @@ class RoomService(private val roomRepository: RoomRepository,
     }
 
     @Transactional
-    fun deleteRoomByRoomId(user: User, roomId: Long): Unit {
-        val optionalRoom = roomRepository.findById(roomId)
-
-        if(!optionalRoom.isPresent){
-            throw ResourceNotFoundException(errorMsg = "삭제 가능한 방이 없습니다.")
-        }
-        val room = optionalRoom.get()
-
-        if (room.validateOwner(user)) {
-            userRoomMapService.disconnectAllByRoomId(room.id!!)
-            roomRepository.delete(room)
-            return
-        }
-
-        userRoomMapService.disconnect(user.id!!, room.id!!)
-    }
-
-    @Transactional
     fun joinRoomByTitle(user: User, byTitleRequest: RoomJoinByTitleRequest): RoomDto {
         val room = roomRepository.findByTitle(byTitleRequest.title) ?: throw ResourceNotFoundException(errorMsg = "요청한 방을 찾을 수 없습니다.")
 
